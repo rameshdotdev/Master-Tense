@@ -1,0 +1,6 @@
+{
+  "name": "Interactive English Tenses Learning App",
+  "description": "A modern, comprehensive learning platform to master all 12 English tenses through structured formulas, interactive exercises, timeline visualizers, quizzes, and progress tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
