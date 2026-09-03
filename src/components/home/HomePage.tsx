@@ -34,7 +34,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenDaily }) => {
   return (
     <div className="space-y-12 pb-12">
       {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden pt-8 pb-12 sm:pt-14 sm:pb-16 bg-gradient-to-b from-[#121212] via-[#0A0A0A] to-[#0A0A0A] border-b border-zinc-800/60">
+      <section className="relative overflow-hidden pt-8 pb-12 sm:pt-14 sm:pb-16 bg-gradient-to-b from-emerald-500/[0.04] via-transparent to-transparent border-b border-zinc-800/60">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-emerald-400 text-[10px] uppercase font-bold tracking-widest shadow-sm">

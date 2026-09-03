@@ -89,9 +89,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     if (isDark) {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+      document.documentElement.style.colorScheme = 'dark';
+      document.body.classList.add('dark');
+      document.body.classList.remove('light');
       localStorage.setItem(THEME_KEY, 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+      document.documentElement.style.colorScheme = 'light';
+      document.body.classList.remove('dark');
+      document.body.classList.add('light');
       localStorage.setItem(THEME_KEY, 'light');
     }
   }, [isDark]);

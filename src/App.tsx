@@ -19,7 +19,7 @@ import { UserProfileModal } from './components/profile/UserProfileModal';
 import { TENSES_DATA } from './data/tensesData';
 
 const MainContent: React.FC = () => {
-  const { activeRoute, navigate } = useApp();
+  const { activeRoute, navigate, isDark } = useApp();
 
   const [isDailyOpen, setIsDailyOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -63,7 +63,9 @@ const MainContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0A0A0A] text-[#E5E5E5] selection:bg-emerald-500 selection:text-black transition-colors duration-150">
+    <div className={`min-h-screen flex flex-col selection:bg-emerald-500 selection:text-black transition-colors duration-200 ${
+      isDark ? 'bg-[#0A0A0A] text-[#E5E5E5]' : 'bg-[#F8FAFC] text-[#0F172A]'
+    }`}>
       {/* Navbar */}
       <Navbar
         onOpenDaily={() => setIsDailyOpen(true)}
