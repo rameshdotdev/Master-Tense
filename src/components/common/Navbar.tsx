@@ -119,11 +119,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDaily, onOpenProfile }) =>
           </nav>
 
           {/* Right Action Controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Search Trigger */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-2 px-2.5 py-1.5 text-xs text-zinc-400 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 rounded-lg transition-colors"
+              className="min-h-[38px] min-w-[38px] flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs text-zinc-400 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 rounded-xl transition-colors"
               title="Search grammar (Cmd/Ctrl + K)"
             >
               <Search className="w-3.5 h-3.5 text-zinc-400" />
@@ -136,11 +136,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDaily, onOpenProfile }) =>
             {/* Streak Counter */}
             <button
               onClick={onOpenDaily}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 hover:border-orange-500/50 text-zinc-200 transition-colors"
+              className="min-h-[38px] flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 hover:border-orange-500/50 text-zinc-200 transition-colors"
               title="Daily Challenge & Streak"
             >
               <Flame className="w-3.5 h-3.5 text-orange-400 fill-orange-400 animate-pulse" />
-              <span className="text-[11px] font-bold uppercase tracking-wider text-orange-400">{stats.streakDays}d Streak</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-orange-400">
+                {stats.streakDays}d<span className="hidden xs:inline"> Streak</span>
+              </span>
             </button>
 
             {/* Level & XP Pill */}
@@ -159,7 +161,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDaily, onOpenProfile }) =>
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 border border-transparent hover:border-zinc-700 transition-colors"
+              className="min-h-[38px] min-w-[38px] flex items-center justify-center p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 border border-transparent hover:border-zinc-700 transition-colors"
               title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
               aria-label="Toggle theme"
             >
@@ -169,7 +171,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDaily, onOpenProfile }) =>
             {/* User Profile Avatar Icon */}
             <button
               onClick={onOpenProfile}
-              className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 text-emerald-400 font-bold text-xs flex items-center justify-center shadow-sm hover:border-emerald-500 transition-all"
+              className="w-9 h-9 rounded-full bg-zinc-800 border border-zinc-700 text-emerald-400 font-bold text-xs flex items-center justify-center shadow-sm hover:border-emerald-500 transition-all"
               title="User Profile"
             >
               U
@@ -178,7 +180,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDaily, onOpenProfile }) =>
             {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className="lg:hidden p-2 rounded-lg text-zinc-300 hover:bg-zinc-800"
+              className="lg:hidden min-h-[38px] min-w-[38px] flex items-center justify-center p-2 rounded-xl text-zinc-300 hover:bg-zinc-800"
               aria-label="Open mobile menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5 text-white" /> : <Menu className="w-5 h-5 text-white" />}

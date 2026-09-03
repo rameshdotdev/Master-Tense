@@ -143,7 +143,7 @@ export const FlashcardDeck: React.FC = () => {
         <div className="w-full min-h-[380px] sm:min-h-[420px]">
           <div
             onClick={() => setIsFlipped((prev) => !prev)}
-            className={`relative w-full h-full min-h-[380px] sm:min-h-[420px] rounded-3xl border border-zinc-800 p-6 sm:p-8 cursor-pointer transition-all duration-300 shadow-md hover:border-zinc-700 bg-[#0D0D0D] flex flex-col justify-between select-none ${
+            className={`relative w-full h-full min-h-[380px] sm:min-h-[420px] rounded-3xl border border-zinc-800 p-5 sm:p-8 cursor-pointer transition-all duration-300 shadow-md hover:border-zinc-700 bg-[#0D0D0D] flex flex-col justify-between select-none active:scale-[0.99] ${
               isFlipped ? 'ring-1 ring-emerald-500/40' : ''
             }`}
           >
@@ -170,11 +170,11 @@ export const FlashcardDeck: React.FC = () => {
                     )}
                   </div>
 
-                  <div className="mt-8 text-center space-y-4">
+                  <div className="mt-4 sm:mt-8 text-center space-y-3 sm:space-y-4">
                     <h2 className="text-2xl sm:text-3xl font-serif italic text-white">
                       {currentCard.tenseName}
                     </h2>
-                    <p className="text-sm sm:text-base font-serif italic text-zinc-300 max-w-md mx-auto">
+                    <p className="text-sm sm:text-base font-serif italic text-zinc-300 max-w-md mx-auto leading-relaxed">
                       &ldquo;{currentCard.sentence}&rdquo;
                     </p>
                     {currentCard.signalWordUsed && (
@@ -185,18 +185,18 @@ export const FlashcardDeck: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-zinc-800 text-center">
-                  <div className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-emerald-400 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-full">
+                <div className="pt-5 border-t border-zinc-800 text-center">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-emerald-400 bg-zinc-900 border border-zinc-800 px-3.5 py-2 rounded-full">
                     <RotateCw className="w-3.5 h-3.5" />
-                    <span>Click anywhere or press Space to flip card</span>
+                    <span>Tap card to flip</span>
                   </div>
                 </div>
               </div>
             ) : (
               /* Back of Card */
-              <div className="flex-1 flex flex-col justify-between space-y-4">
+              <div className="flex-1 flex flex-col justify-between space-y-3">
                 <div>
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between mb-2.5">
                     <span className="text-[10px] uppercase font-mono font-bold tracking-wider px-2.5 py-1 rounded-full bg-emerald-950/40 border border-emerald-500/30 text-emerald-400">
                       Key Takeaways • Back
                     </span>
@@ -206,41 +206,41 @@ export const FlashcardDeck: React.FC = () => {
                   </div>
 
                   {/* Formula Breakdown */}
-                  <div className="p-3.5 rounded-2xl bg-zinc-900/80 border border-zinc-800 mb-3 space-y-1">
+                  <div className="p-3 sm:p-3.5 rounded-2xl bg-zinc-900/80 border border-zinc-800 mb-2.5 space-y-1">
                     <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-zinc-500 block">
                       Sentence Formula:
                     </span>
-                    <p className="text-xs font-mono font-bold text-emerald-400">
+                    <p className="text-xs font-mono font-bold text-emerald-400 break-words">
                       (+) {currentTense ? currentTense.formula.affirmative : currentCard.formula}
                     </p>
                     {currentTense && (
-                      <p className="text-xs font-mono text-rose-400">
+                      <p className="text-xs font-mono text-rose-400 break-words">
                         (-) {currentTense.formula.negative}
                       </p>
                     )}
                   </div>
 
                   {/* Core Usage & Rule */}
-                  <div className="text-xs text-zinc-300 leading-relaxed mb-3">
+                  <div className="text-xs text-zinc-300 leading-relaxed mb-2">
                     <strong className="text-white font-serif italic">Usage: </strong>
                     {currentCard.usage}
                   </div>
-                  <div className="text-xs text-zinc-400 leading-relaxed mb-3">
+                  <div className="text-xs text-zinc-400 leading-relaxed mb-2">
                     <strong className="text-white font-serif italic">Why: </strong>
                     {currentCard.explanation}
                   </div>
 
                   {/* Signal Words */}
                   {currentTense && currentTense.signalWords.length > 0 && (
-                    <div className="mb-3">
+                    <div className="mb-2">
                       <span className="text-[10px] uppercase font-mono font-bold text-zinc-500 block mb-1">
-                        Common Signal Words:
+                        Signal Words:
                       </span>
-                      <div className="flex flex-wrap gap-1.5">
+                      <div className="flex flex-wrap gap-1">
                         {currentTense.signalWords.slice(0, 5).map((w, i) => (
                           <span
                             key={i}
-                            className="px-2 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300 text-[11px] font-mono"
+                            className="px-2 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300 text-[10px] font-mono"
                           >
                             {w}
                           </span>
@@ -251,16 +251,16 @@ export const FlashcardDeck: React.FC = () => {
 
                   {/* Common Mistake */}
                   {currentTense && currentTense.commonMistakes[0] && (
-                    <div className="p-2.5 rounded-xl bg-rose-950/20 border border-rose-900/40 text-xs text-zinc-300">
+                    <div className="p-2 rounded-xl bg-rose-950/20 border border-rose-900/40 text-xs text-zinc-300">
                       <strong className="text-rose-400 font-mono">Pitfall: </strong>
                       Avoid &ldquo;{currentTense.commonMistakes[0].incorrect}&rdquo; ➔ Use &ldquo;{currentTense.commonMistakes[0].correct}&rdquo;
                     </div>
                   )}
                 </div>
 
-                <div className="pt-3 border-t border-zinc-800 text-center">
-                  <span className="text-[11px] font-mono text-zinc-500">
-                    Rate your recall below to update your deck:
+                <div className="pt-2 border-t border-zinc-800 text-center">
+                  <span className="text-[10px] font-mono text-zinc-500">
+                    Rate recall below to advance deck:
                   </span>
                 </div>
               </div>
@@ -269,47 +269,56 @@ export const FlashcardDeck: React.FC = () => {
         </div>
       )}
 
-      {/* Card Controls & Rating Buttons */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-        {/* Previous Button */}
-        <button
-          onClick={handlePrev}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono font-bold text-zinc-300 hover:bg-zinc-800 shadow-sm"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          <span>Previous</span>
-        </button>
+      {/* Card Navigation & Rating Controls (Optimized for Mobile) */}
+      <div className="space-y-3 pt-2">
+        {/* Navigation Row: Prev / Flip / Next */}
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            onClick={handlePrev}
+            className="min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono font-bold text-zinc-300 hover:bg-zinc-800 shadow-sm"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span>Prev</span>
+          </button>
 
-        {/* Rate Buttons: Difficult, Review, Easy */}
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-center">
+          <button
+            onClick={() => setIsFlipped((prev) => !prev)}
+            className="min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-zinc-800 border border-zinc-700 text-xs font-mono font-bold text-emerald-400 hover:bg-zinc-700 shadow-sm"
+          >
+            <RotateCw className="w-3.5 h-3.5" />
+            <span>{isFlipped ? 'Show Front' : 'Flip Card'}</span>
+          </button>
+
+          <button
+            onClick={handleNext}
+            className="min-h-[44px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono font-bold text-zinc-300 hover:bg-zinc-800 shadow-sm"
+          >
+            <span>Next</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Rating Buttons: Difficult / Review / Easy */}
+        <div className="grid grid-cols-3 gap-2">
           <button
             onClick={() => handleRate('difficult')}
-            className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 font-mono text-xs font-bold hover:bg-rose-900/60 transition-colors"
+            className="min-h-[44px] px-2 py-2.5 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 font-mono text-xs font-bold hover:bg-rose-900/60 active:scale-[0.98] transition-all text-center"
           >
             Difficult
           </button>
           <button
             onClick={() => handleRate('review')}
-            className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-300 font-mono text-xs font-bold hover:bg-amber-900/60 transition-colors"
+            className="min-h-[44px] px-2 py-2.5 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-300 font-mono text-xs font-bold hover:bg-amber-900/60 active:scale-[0.98] transition-all text-center"
           >
-            Review Again
+            Review
           </button>
           <button
             onClick={() => handleRate('easy')}
-            className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 font-mono text-xs font-bold hover:bg-emerald-900/60 transition-colors"
+            className="min-h-[44px] px-2 py-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 font-mono text-xs font-bold hover:bg-emerald-900/60 active:scale-[0.98] transition-all text-center"
           >
             Easy (+10 XP)
           </button>
         </div>
-
-        {/* Next Button */}
-        <button
-          onClick={handleNext}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono font-bold text-zinc-300 hover:bg-zinc-800 shadow-sm"
-        >
-          <span>Next</span>
-          <ChevronRight className="w-4 h-4" />
-        </button>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/common/Navbar';
+import { MobileBottomNav } from './components/common/MobileBottomNav';
 import { Footer } from './components/common/Footer';
 import { SearchModal } from './components/common/SearchModal';
 import { HomePage } from './components/home/HomePage';
@@ -69,13 +70,19 @@ const MainContent: React.FC = () => {
         onOpenProfile={() => setIsProfileOpen(true)}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1">
+      {/* Main Content Area with safe padding for mobile bottom bar */}
+      <main className="flex-1 pb-20 lg:pb-0">
         {renderRouteView()}
       </main>
 
       {/* Footer */}
       <Footer />
+
+      {/* Persistent Mobile Bottom Bar */}
+      <MobileBottomNav
+        onOpenDaily={() => setIsDailyOpen(true)}
+        onOpenProfile={() => setIsProfileOpen(true)}
+      />
 
       {/* Global Modals */}
       <SearchModal />

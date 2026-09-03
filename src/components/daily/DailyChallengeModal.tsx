@@ -41,36 +41,39 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150"
+      onClick={onClose}
+    >
       <div
-        className="w-full max-w-xl bg-[#0D0D0D] rounded-3xl shadow-2xl border border-zinc-800 overflow-hidden flex flex-col"
+        className="w-full max-w-xl bg-[#0D0D0D] rounded-3xl shadow-2xl border border-zinc-800 overflow-hidden flex flex-col max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 border-b border-zinc-800 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-400 flex items-center justify-center">
+        <div className="p-4 sm:p-5 border-b border-zinc-800 flex items-center justify-between sticky top-0 bg-[#0D0D0D] z-10">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-8 h-8 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
               <Flame className="w-4 h-4 fill-amber-500" />
             </div>
             <div>
-              <h3 className="text-base font-serif italic text-white">
+              <h3 className="text-sm sm:text-base font-serif italic text-white leading-tight">
                 Daily Grammar Challenge
               </h3>
-              <p className="text-[11px] text-zinc-400 font-mono">
+              <p className="text-[10px] sm:text-[11px] text-zinc-400 font-mono">
                 Complete 3 quick questions to protect your {stats.streakDays}-day streak!
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            className="min-h-[38px] min-w-[38px] flex items-center justify-center p-1.5 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {completedInModal ? (
             <div className="text-center py-6 space-y-4">
               <div className="w-16 h-16 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 mx-auto flex items-center justify-center">

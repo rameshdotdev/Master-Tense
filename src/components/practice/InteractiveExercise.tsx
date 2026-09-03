@@ -150,10 +150,11 @@ export const InteractiveExercise: React.FC<InteractiveExerciseProps> = ({
                   key={`${word}-${idx}`}
                   disabled={isAnswered}
                   onClick={() => handleRemoveWord(word, idx)}
-                  className="px-3 py-1.5 rounded-lg bg-emerald-500 text-black font-bold text-xs shadow-sm hover:bg-emerald-400 transition-colors"
+                  className="min-h-[40px] px-3.5 py-2 rounded-xl bg-emerald-500 text-black font-bold text-xs sm:text-sm shadow-sm hover:bg-emerald-400 transition-colors flex items-center gap-1"
                   title="Click to remove"
                 >
-                  {word}
+                  <span>{word}</span>
+                  <span className="text-[10px] opacity-70">✕</span>
                 </button>
               ))
             )}
@@ -164,12 +165,12 @@ export const InteractiveExercise: React.FC<InteractiveExerciseProps> = ({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-wider">
-                  Available Words:
+                  Available Words (Tap to place):
                 </span>
                 {rearrangedWords.length > 0 && (
                   <button
                     onClick={handleResetRearrange}
-                    className="flex items-center gap-1 text-[11px] font-mono text-zinc-400 hover:text-zinc-200"
+                    className="min-h-[32px] flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-mono text-zinc-400 hover:text-zinc-200"
                   >
                     <RefreshCw className="w-3 h-3" /> Reset
                   </button>
@@ -180,7 +181,7 @@ export const InteractiveExercise: React.FC<InteractiveExerciseProps> = ({
                   <button
                     key={`${word}-${idx}`}
                     onClick={() => handlePickWord(word, idx)}
-                    className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium text-xs border border-zinc-700 transition-colors shadow-sm"
+                    className="min-h-[42px] px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-zinc-200 font-medium text-xs sm:text-sm border border-zinc-700 transition-colors shadow-sm"
                   >
                     {word}
                   </button>
@@ -193,7 +194,7 @@ export const InteractiveExercise: React.FC<InteractiveExerciseProps> = ({
             <button
               disabled={rearrangedWords.length === 0}
               onClick={handleRearrangeSubmit}
-              className="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-black font-bold uppercase tracking-wider text-xs transition-colors shadow"
+              className="w-full min-h-[44px] py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 disabled:opacity-40 text-black font-bold uppercase tracking-wider text-xs sm:text-sm transition-colors shadow"
             >
               Check Order
             </button>
@@ -207,7 +208,7 @@ export const InteractiveExercise: React.FC<InteractiveExerciseProps> = ({
           {question.options.map((opt) => {
             const isSelected = selectedOption === opt;
             let optStyle =
-              'bg-zinc-900/60 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/60 text-zinc-200';
+              'bg-zinc-900/60 border-zinc-800 hover:border-zinc-700 active:bg-zinc-800 text-zinc-200';
 
             if (isAnswered) {
               if (opt === question.correctAnswer) {
@@ -226,9 +227,9 @@ export const InteractiveExercise: React.FC<InteractiveExerciseProps> = ({
                 key={opt}
                 disabled={isAnswered}
                 onClick={() => handleSubmit(opt)}
-                className={`p-3 rounded-xl border text-left text-xs sm:text-sm font-medium transition-all flex items-center justify-between ${optStyle}`}
+                className={`min-h-[48px] p-3.5 rounded-xl border text-left text-xs sm:text-sm font-medium transition-all flex items-center justify-between ${optStyle}`}
               >
-                <span>{opt}</span>
+                <span className="leading-snug pr-2">{opt}</span>
                 {isAnswered && opt === question.correctAnswer && (
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 ml-2" />
                 )}
@@ -302,7 +303,7 @@ export const InteractiveExercise: React.FC<InteractiveExerciseProps> = ({
       {isAnswered && showNextButton && onNext && (
         <button
           onClick={onNext}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold uppercase tracking-wider text-xs transition-colors shadow-sm"
+          className="w-full min-h-[48px] flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold uppercase tracking-wider text-xs sm:text-sm transition-colors shadow-md"
         >
           <span>Next Exercise</span>
           <ArrowRight className="w-4 h-4" />

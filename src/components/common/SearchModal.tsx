@@ -121,44 +121,47 @@ export const SearchModal: React.FC = () => {
   const getMatchIcon = (type: string) => {
     switch (type) {
       case 'Signal Word':
-        return <Key className="w-3.5 h-3.5 text-amber-500" />;
+        return <Key className="w-3.5 h-3.5 text-amber-400" />;
       case 'Mistake':
-        return <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />;
+        return <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />;
       case 'Rule':
-        return <Lightbulb className="w-3.5 h-3.5 text-indigo-500" />;
+        return <Lightbulb className="w-3.5 h-3.5 text-emerald-400" />;
       default:
-        return <BookOpen className="w-3.5 h-3.5 text-blue-500" />;
+        return <BookOpen className="w-3.5 h-3.5 text-teal-400" />;
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
+    <div 
+      className="fixed inset-0 z-50 flex items-start justify-center pt-4 sm:pt-16 px-3 sm:px-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150"
+      onClick={() => setIsSearchOpen(false)}
+    >
       <div
-        className="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[80vh]"
+        className="w-full max-w-2xl bg-[#0D0D0D] rounded-3xl shadow-2xl border border-zinc-800 overflow-hidden flex flex-col max-h-[88vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Header */}
-        <div className="relative flex items-center px-4 py-3.5 border-b border-slate-200 dark:border-slate-800">
-          <Search className="w-5 h-5 text-slate-400 mr-3 shrink-0" />
+        <div className="relative flex items-center px-4 py-3.5 border-b border-zinc-800">
+          <Search className="w-5 h-5 text-zinc-400 mr-3 shrink-0" />
           <input
             type="text"
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search tense names, rules, signal words (e.g. 'since', 'already', 'habit')..."
-            className="w-full bg-transparent text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none text-sm font-medium"
+            placeholder="Search tense names, rules, signal words..."
+            className="w-full bg-transparent text-white placeholder-zinc-500 focus:outline-none text-base sm:text-sm font-medium"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 mr-2"
+              className="min-h-[36px] min-w-[36px] flex items-center justify-center p-1.5 text-zinc-400 hover:text-white mr-1"
             >
               <X className="w-4 h-4" />
             </button>
           )}
           <button
             onClick={() => setIsSearchOpen(false)}
-            className="px-2 py-1 text-xs font-semibold rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+            className="min-h-[36px] px-2.5 py-1 text-xs font-mono font-bold rounded-xl bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition-colors"
           >
             ESC
           </button>
@@ -166,8 +169,8 @@ export const SearchModal: React.FC = () => {
 
         {/* Quick Suggestion Pills */}
         {!query && (
-          <div className="p-4 bg-slate-50 dark:bg-slate-900/40 border-b border-slate-100 dark:border-slate-800">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
+          <div className="p-3.5 sm:p-4 bg-zinc-900/50 border-b border-zinc-800">
+            <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-wider block mb-2">
               Popular Searches
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -175,7 +178,7 @@ export const SearchModal: React.FC = () => {
                 <button
                   key={tag}
                   onClick={() => setQuery(tag)}
-                  className="px-2.5 py-1 text-xs rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition-colors"
+                  className="min-h-[32px] px-3 py-1 text-xs font-mono rounded-xl bg-zinc-800/80 text-zinc-300 border border-zinc-700 hover:border-emerald-500 hover:text-emerald-400 transition-colors"
                 >
                   {tag}
                 </button>
@@ -185,11 +188,11 @@ export const SearchModal: React.FC = () => {
         )}
 
         {/* Results List */}
-        <div className="overflow-y-auto p-2 flex-1 divide-y divide-slate-100 dark:divide-slate-800/60">
+        <div className="overflow-y-auto p-2 sm:p-3 flex-1 divide-y divide-zinc-800/60">
           {query && searchResults.length === 0 && (
-            <div className="p-8 text-center text-slate-500 dark:text-slate-400">
-              <p className="text-sm font-semibold">No results found for &ldquo;{query}&rdquo;</p>
-              <p className="text-xs text-slate-400 mt-1">
+            <div className="p-8 text-center text-zinc-400">
+              <p className="text-sm font-serif italic text-white">No results found for &ldquo;{query}&rdquo;</p>
+              <p className="text-xs text-zinc-500 mt-1 font-mono">
                 Try searching for keywords like &ldquo;since&rdquo;, &ldquo;routine&rdquo;, &ldquo;past simple&rdquo;, or &ldquo;finished action&rdquo;.
               </p>
             </div>
@@ -199,27 +202,27 @@ export const SearchModal: React.FC = () => {
             <div
               key={`${res.tenseId}-${res.matchType}-${index}`}
               onClick={() => handleSelect(res.tenseId)}
-              className="p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 cursor-pointer transition-colors flex items-start justify-between gap-3 group"
+              className="p-3 sm:p-3.5 rounded-2xl hover:bg-zinc-800/50 active:bg-zinc-800/80 cursor-pointer transition-colors flex items-start justify-between gap-3 group"
             >
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <div className="space-y-1 min-w-0 flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">
                     {res.tenseName}
                   </span>
-                  <span className="flex items-center gap-1 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                  <span className="flex items-center gap-1 text-[10px] font-mono font-semibold uppercase px-2 py-0.5 rounded-full bg-zinc-900 text-zinc-300 border border-zinc-800">
                     {getMatchIcon(res.matchType)}
                     {res.matchType}
                   </span>
-                  <span className="text-[10px] font-medium capitalize text-slate-400">
+                  <span className="text-[10px] font-mono capitalize text-zinc-500">
                     • {res.category}
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
                   {res.snippet}
                 </p>
               </div>
 
-              <div className="p-2 rounded-lg text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/40 transition-colors shrink-0">
+              <div className="p-2 rounded-xl text-zinc-500 group-hover:text-emerald-400 group-hover:bg-zinc-800 transition-colors shrink-0">
                 <ArrowRight className="w-4 h-4" />
               </div>
             </div>
@@ -227,9 +230,10 @@ export const SearchModal: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="p-3 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
-          <span>Tip: Press ESC anytime to close search</span>
-          <span>{searchResults.length} {searchResults.length === 1 ? 'match' : 'matches'} found</span>
+        <div className="p-3 bg-zinc-900/60 border-t border-zinc-800 text-[11px] font-mono text-zinc-500 flex items-center justify-between">
+          <span className="hidden sm:inline">Tip: Press ESC anytime to close search</span>
+          <span className="sm:hidden">Tap anywhere outside to close</span>
+          <span>{searchResults.length} {searchResults.length === 1 ? 'match' : 'matches'}</span>
         </div>
       </div>
     </div>

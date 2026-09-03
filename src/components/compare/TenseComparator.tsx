@@ -210,7 +210,7 @@ export const TenseComparator: React.FC = () => {
           <button
             key={preset.id}
             onClick={() => setSelectedPresetId(preset.id)}
-            className={`px-3.5 py-2 rounded-xl text-xs whitespace-nowrap transition-all border ${
+            className={`min-h-[44px] px-3.5 py-2.5 rounded-xl text-xs whitespace-nowrap transition-all border ${
               selectedPresetId === preset.id
                 ? 'bg-emerald-500 text-black font-bold uppercase tracking-wider border-emerald-500 shadow-md'
                 : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800 font-mono'
@@ -222,7 +222,7 @@ export const TenseComparator: React.FC = () => {
       </div>
 
       {/* Core Difference Callout Banner */}
-      <div className="p-5 rounded-3xl bg-[#0D0D0D] border border-zinc-800 space-y-2">
+      <div className="p-4 sm:p-5 rounded-3xl bg-[#0D0D0D] border border-zinc-800 space-y-2">
         <div className="flex items-center gap-2 text-emerald-400 font-bold text-[10px] uppercase font-mono tracking-widest">
           <Sparkles className="w-4 h-4 text-emerald-400" />
           <span>Core Distinguishing Factor</span>
@@ -233,9 +233,9 @@ export const TenseComparator: React.FC = () => {
       </div>
 
       {/* Side-by-Side Columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* TENSE A COLUMN */}
-        <div className="bg-[#0D0D0D] rounded-3xl border border-zinc-800 p-6 space-y-5 shadow-sm">
+        <div className="bg-[#0D0D0D] rounded-3xl border border-zinc-800 p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-sm">
           <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
             <div>
               <span className="text-[10px] uppercase font-mono font-bold tracking-widest text-emerald-400">
@@ -293,7 +293,7 @@ export const TenseComparator: React.FC = () => {
         </div>
 
         {/* TENSE B COLUMN */}
-        <div className="bg-[#0D0D0D] rounded-3xl border border-zinc-800 p-6 space-y-5 shadow-sm">
+        <div className="bg-[#0D0D0D] rounded-3xl border border-zinc-800 p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-sm">
           <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
             <div>
               <span className="text-[10px] uppercase font-mono font-bold tracking-widest text-teal-400">

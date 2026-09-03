@@ -213,7 +213,7 @@ export const QuizRunner: React.FC = () => {
                 <button
                   key={cat.id}
                   onClick={() => setCategory(cat.id)}
-                  className={`py-2.5 rounded-xl font-bold text-xs transition-all border ${
+                  className={`min-h-[44px] py-2.5 px-2 rounded-xl font-bold text-xs transition-all border ${
                     category === cat.id
                       ? 'bg-emerald-500 text-black border-emerald-500 uppercase tracking-wider shadow'
                       : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800 font-mono'
@@ -240,7 +240,7 @@ export const QuizRunner: React.FC = () => {
                 <button
                   key={diff.id}
                   onClick={() => setDifficulty(diff.id)}
-                  className={`py-2.5 rounded-xl font-bold text-xs transition-all border ${
+                  className={`min-h-[44px] py-2.5 px-2 rounded-xl font-bold text-xs transition-all border ${
                     difficulty === diff.id
                       ? 'bg-emerald-500 text-black border-emerald-500 uppercase tracking-wider shadow'
                       : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800 font-mono'
@@ -255,7 +255,7 @@ export const QuizRunner: React.FC = () => {
           {/* Start Quiz Action */}
           <button
             onClick={startQuiz}
-            className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
+            className="w-full min-h-[48px] py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
           >
             <span>Start Tense Quiz</span>
             <ArrowRight className="w-4 h-4" />
@@ -271,14 +271,14 @@ export const QuizRunner: React.FC = () => {
     const progressPercent = Math.round(((currentIndex + 1) / activeQuestions.length) * 100);
 
     return (
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-4 sm:space-y-6">
         {/* Quiz Progress & Timer Header */}
-        <div className="bg-[#0D0D0D] rounded-2xl border border-zinc-800 p-4 shadow-sm flex items-center justify-between">
+        <div className="bg-[#0D0D0D] rounded-2xl border border-zinc-800 p-3.5 sm:p-4 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase">
               Question {currentIndex + 1} of {activeQuestions.length}
             </span>
-            <div className="w-36 sm:w-48 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+            <div className="w-32 sm:w-48 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
               <div
                 className="h-full bg-emerald-500 rounded-full transition-all duration-300"
                 style={{ width: `${progressPercent}%` }}
@@ -286,14 +286,14 @@ export const QuizRunner: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-xs font-bold">
+          <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-xs font-bold">
             <Timer className="w-4 h-4 text-emerald-400" />
             <span>{formatTime(secondsElapsed)}</span>
           </div>
         </div>
 
         {/* Question Card */}
-        <div className="bg-[#0D0D0D] rounded-3xl border border-zinc-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div className="bg-[#0D0D0D] rounded-3xl border border-zinc-800 p-4 sm:p-8 shadow-sm space-y-5 sm:space-y-6">
           <div className="flex items-center gap-2">
             <span className="text-[10px] uppercase font-mono font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300">
               {currentQ.type.replace(/-/g, ' ')}
@@ -314,7 +314,7 @@ export const QuizRunner: React.FC = () => {
                 <button
                   key={opt}
                   onClick={() => handleSelectAnswer(opt)}
-                  className={`w-full p-4 rounded-2xl border text-left text-xs sm:text-sm font-semibold transition-all flex items-center justify-between ${
+                  className={`w-full min-h-[48px] p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-left text-xs sm:text-sm font-semibold transition-all flex items-center justify-between ${
                     selectedOption === opt
                       ? 'bg-emerald-950/30 border-emerald-500/80 text-emerald-300 shadow-sm'
                       : 'bg-zinc-900/60 border-zinc-800 text-zinc-300 hover:border-zinc-700'

@@ -56,10 +56,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenDaily }) => {
           </p>
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 w-full max-w-md sm:max-w-none mx-auto">
             <button
               onClick={() => navigate('/learn')}
-              className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2"
+              className="w-full sm:w-auto min-h-[46px] px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
             >
               <BookOpen className="w-4 h-4 stroke-[2.5]" />
               <span>Start Learning</span>
@@ -67,7 +67,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenDaily }) => {
 
             <button
               onClick={() => navigate('/quiz')}
-              className="px-6 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-emerald-500 text-zinc-200 font-bold text-xs uppercase tracking-widest transition-all flex items-center gap-2"
+              className="w-full sm:w-auto min-h-[46px] px-6 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-emerald-500 text-zinc-200 font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2"
             >
               <HelpCircle className="w-4 h-4 text-emerald-400" />
               <span>Take a Quick Test</span>
@@ -75,7 +75,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenDaily }) => {
 
             <button
               onClick={() => navigate('/cheatsheet')}
-              className="px-6 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-300 font-bold text-xs uppercase tracking-widest transition-all flex items-center gap-2"
+              className="w-full sm:w-auto min-h-[46px] px-6 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-300 font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2"
             >
               <Table className="w-4 h-4 text-zinc-400" />
               <span>Tense Cheat Sheet</span>
