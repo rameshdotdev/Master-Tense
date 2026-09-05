@@ -36,7 +36,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDaily, onOpenProfile }) =>
     isDark,
     toggleTheme,
     setIsSearchOpen,
-    stats
+    stats,
+    user
   } = useApp();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -257,15 +258,30 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDaily, onOpenProfile }) =>
             {/* Profile Avatar Trigger */}
             <button
               onClick={onOpenProfile}
-              className={`w-9 h-9 rounded-xl border text-xs font-bold flex items-center justify-center shadow-xs transition-all ${
+              className={`relative min-h-[36px] px-2 py-1 rounded-xl border text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all ${
                 isDark
                   ? 'bg-zinc-900 border-zinc-800 text-emerald-400 hover:border-emerald-500/70 hover:bg-zinc-800'
                   : 'bg-slate-100 border-slate-200 text-emerald-700 hover:border-emerald-500 hover:bg-slate-200'
               }`}
-              title={`Level ${stats.level} Profile & Streak`}
+              title={user ? `${user.displayName || user.email} (Lv.${stats.level})` : `Sign in / Profile (Lv.${stats.level})`}
               aria-label="User Profile"
             >
-              <span className="font-mono">Lv.{stats.level}</span>
+              {user?.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName || 'User'}
+                  className="w-5 h-5 rounded-lg object-cover border border-emerald-500/30"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <span className="w-5 h-5 rounded-lg bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-[10px] font-bold">
+                  {user ? (user.displayName?.[0] || 'U') : 'G'}
+                </span>
+              )}
+              <span className="font-mono text-[11px]">Lv.{stats.level}</span>
+              {user && (
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="Google account active" />
+              )}
             </button>
 
             {/* Mobile Hamburger Menu Toggle */}
@@ -292,13 +308,34 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDaily, onOpenProfile }) =>
           }`}
         >
           <div className="flex items-center justify-between py-2 border-b border-zinc-800/40 mb-2">
-            <span
-              className={`text-[10px] uppercase font-mono font-bold tracking-wider ${
-                isDark ? 'text-zinc-500' : 'text-slate-400'
-              }`}
+            <div
+              onClick={() => {
+                onOpenProfile();
+                setMobileMenuOpen(false);
+              }}
+              className="flex items-center gap-2 cursor-pointer"
             >
-              Menu
-            </span>
+              {user?.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName || 'User'}
+                  className="w-7 h-7 rounded-lg object-cover border border-emerald-500/30"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <span className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-xs font-bold font-mono">
+                  {user ? (user.displayName?.[0] || 'U') : 'G'}
+                </span>
+              )}
+              <div className="text-left">
+                <span className="text-xs font-bold block leading-tight truncate max-w-[150px]">
+                  {user ? (user.displayName || user.email) : 'Guest Learner'}
+                </span>
+                <span className="text-[10px] text-emerald-500 font-mono">
+                  {user ? 'Google Synced' : 'Tap to Sign In'}
+                </span>
+              </div>
+            </div>
             <span className="text-xs font-mono font-semibold text-emerald-500">
               {stats.completedLessons.length} / 12 Mastered
             </span>

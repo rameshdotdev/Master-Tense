@@ -1,0 +1,19 @@
+{
+  "entities": {
+    "UserProfile": {
+      "collection": "users",
+      "fields": {
+        "uid": { "type": "string", "description": "Firebase Auth user ID" },
+        "email": { "type": "string", "description": "Google account email address" },
+        "displayName": { "type": "string", "description": "Google account display name" },
+        "photoURL": { "type": "string", "description": "Google account avatar photo URL" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of account registration" },
+        "lastLoginAt": { "type": "string", "description": "ISO timestamp of most recent login" },
+        "stats": {
+          "type": "object",
+          "description": "User progress, XP, level, streak, completed lessons, mistakes, and quiz history"
+        }
+      }
+    }
+  }
+}

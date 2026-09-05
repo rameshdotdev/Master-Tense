@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
   Achievement,
   FlashcardItem,
@@ -8,6 +8,15 @@ import {
   UserStats
 } from '../types';
 import { TENSES_DATA } from '../data/tensesData';
+import {
+  auth,
+  signInWithGoogle as firebaseSignInWithGoogle,
+  signOutUser,
+  fetchOrInitUserDoc,
+  saveStatsToFirestore,
+  type User
+} from '../lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import confetti from 'canvas-confetti';
 
 interface AppContextType {
@@ -33,20 +42,29 @@ interface AppContextType {
   completeDailyChallenge: () => void;
   resetAllData: () => void;
   triggerConfetti: () => void;
+  // Firebase Authentication & Session Management
+  user: User | null;
+  isAuthLoading: boolean;
+  authError: string | null;
+  clearAuthError: () => void;
+  signInWithGoogle: () => Promise<void>;
+  signOut: () => Promise<void>;
+  isSyncing: boolean;
+  lastSyncedAt: string | null;
 }
 
-const STORAGE_KEY = 'english_tenses_app_data_v1';
+const GUEST_STORAGE_KEY = 'english_tenses_guest_data_v2';
 const THEME_KEY = 'english_tenses_theme';
 
-const DEFAULT_STATS: UserStats = {
-  xp: 120,
+const INITIAL_STATS: UserStats = {
+  xp: 0,
   level: 1,
-  streakDays: 3,
+  streakDays: 1,
   lastActiveDate: new Date().toISOString().split('T')[0],
-  totalAnswered: 8,
-  totalCorrect: 7,
-  completedLessons: ['present-simple'],
-  favoritedTenses: ['present-simple', 'past-simple'],
+  totalAnswered: 0,
+  totalCorrect: 0,
+  completedLessons: [],
+  favoritedTenses: [],
   mistakes: [],
   quizHistory: [],
   dailyChallengeCompletedDate: '',
@@ -121,23 +139,130 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Stats
+  // Authentication & Session States
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
+
+  // Flag to avoid syncing local stats to cloud before the initial fetch is loaded
+  const isCloudLoadedRef = useRef<boolean>(false);
+
+  // Stats: initialize with guest local data or clean INITIAL_STATS
   const [stats, setStats] = useState<UserStats>(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(GUEST_STORAGE_KEY);
       if (raw) {
-        return { ...DEFAULT_STATS, ...JSON.parse(raw) };
+        return { ...INITIAL_STATS, ...JSON.parse(raw) };
       }
     } catch {
       // fallback
     }
-    return DEFAULT_STATS;
+    return INITIAL_STATS;
   });
 
-  // Save to localStorage
+  // Listen to Firebase Auth state changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
-  }, [stats]);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setIsAuthLoading(true);
+      setUser(currentUser);
+
+      if (currentUser) {
+        try {
+          setIsSyncing(true);
+          // Fetch or initialize user document in Firestore
+          const cloudStats = await fetchOrInitUserDoc(currentUser, stats);
+          setStats(cloudStats);
+          isCloudLoadedRef.current = true;
+          const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          setLastSyncedAt(timeStr);
+          // Also cache locally under user key
+          localStorage.setItem(`english_tenses_user_${currentUser.uid}`, JSON.stringify(cloudStats));
+        } catch (err: unknown) {
+          console.error('Error syncing user document from cloud:', err);
+          isCloudLoadedRef.current = true;
+        } finally {
+          setIsSyncing(false);
+        }
+      } else {
+        // User logged out: load guest stats
+        isCloudLoadedRef.current = false;
+        try {
+          const guestRaw = localStorage.getItem(GUEST_STORAGE_KEY);
+          if (guestRaw) {
+            setStats({ ...INITIAL_STATS, ...JSON.parse(guestRaw) });
+          } else {
+            setStats(INITIAL_STATS);
+          }
+        } catch {
+          setStats(INITIAL_STATS);
+        }
+        setLastSyncedAt(null);
+      }
+      setIsAuthLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Save to localStorage & Cloud Firestore
+  useEffect(() => {
+    if (user) {
+      // Save to user local cache
+      localStorage.setItem(`english_tenses_user_${user.uid}`, JSON.stringify(stats));
+
+      // If cloud document has been loaded, persist changes to Firestore
+      if (isCloudLoadedRef.current) {
+        setIsSyncing(true);
+        saveStatsToFirestore(user.uid, stats)
+          .then(() => {
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            setLastSyncedAt(timeStr);
+          })
+          .catch((err) => {
+            console.error('Failed to sync to Firestore:', err);
+          })
+          .finally(() => {
+            setIsSyncing(false);
+          });
+      }
+    } else {
+      // Save to guest cache
+      localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(stats));
+    }
+  }, [stats, user]);
+
+  const clearAuthError = () => setAuthError(null);
+
+  const signInWithGoogle = async () => {
+    setAuthError(null);
+    try {
+      setIsAuthLoading(true);
+      const signedInUser = await firebaseSignInWithGoogle();
+      triggerConfetti();
+    } catch (err: unknown) {
+      const error = err as Error;
+      setAuthError(error.message || 'Failed to sign in with Google');
+      throw err;
+    } finally {
+      setIsAuthLoading(false);
+    }
+  };
+
+  const signOut = async () => {
+    setAuthError(null);
+    try {
+      await signOutUser();
+      setUser(null);
+      isCloudLoadedRef.current = false;
+      setStats(INITIAL_STATS);
+      setLastSyncedAt(null);
+    } catch (err: unknown) {
+      const error = err as Error;
+      setAuthError(error.message || 'Failed to sign out');
+    }
+  };
 
   // Streak verification on load
   useEffect(() => {
@@ -339,8 +464,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const resetAllData = () => {
-    localStorage.removeItem(STORAGE_KEY);
-    setStats(DEFAULT_STATS);
+    if (user) {
+      localStorage.removeItem(`english_tenses_user_${user.uid}`);
+      saveStatsToFirestore(user.uid, INITIAL_STATS);
+    } else {
+      localStorage.removeItem(GUEST_STORAGE_KEY);
+    }
+    setStats(INITIAL_STATS);
   };
 
   // Compute Achievements dynamically based on stats
@@ -421,7 +551,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         rateFlashcard,
         completeDailyChallenge,
         resetAllData,
-        triggerConfetti
+        triggerConfetti,
+        user,
+        isAuthLoading,
+        authError,
+        clearAuthError,
+        signInWithGoogle,
+        signOut,
+        isSyncing,
+        lastSyncedAt
       }}
     >
       {children}

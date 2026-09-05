@@ -34,7 +34,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
     setIsSearchOpen,
     isDark,
     toggleTheme,
-    stats
+    stats,
+    user
   } = useApp();
 
   const [isMoreOpen, setIsMoreOpen] = useState(false);
@@ -208,12 +209,25 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
                 }}
                 className="p-3 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center gap-3 text-left hover:border-emerald-500/50 transition-colors"
               >
-                <div className="w-8 h-8 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
-                  <User className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="text-xs font-bold text-white block">My Profile</span>
-                  <span className="text-[10px] font-mono text-emerald-400">Lv.{stats.level} ({stats.xp} XP)</span>
+                {user?.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt={user.displayName || 'User'}
+                    className="w-8 h-8 rounded-xl object-cover border border-emerald-500/30 shrink-0"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
+                    <User className="w-4 h-4" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <span className="text-xs font-bold text-white block truncate">
+                    {user ? (user.displayName || 'Account') : 'My Profile'}
+                  </span>
+                  <span className="text-[10px] font-mono text-emerald-400">
+                    {user ? 'Google Active' : `Lv.${stats.level} (${stats.xp} XP)`}
+                  </span>
                 </div>
               </button>
             </div>
