@@ -16,8 +16,6 @@ import {
   Sparkles,
   ExternalLink,
   Copy,
-  Edit3,
-  Save,
   ShieldAlert,
   Info
 } from 'lucide-react';
@@ -41,16 +39,13 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
     isSyncing,
     lastSyncedAt,
     isDark,
-    guestName,
-    updateGuestName
+    authPromptReason
   } = useApp();
 
   const [signingIn, setSigningIn] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [copiedDomain, setCopiedDomain] = useState(false);
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [nameInput, setNameInput] = useState(guestName || 'Ramesh');
 
   if (!isOpen) return null;
 
@@ -118,23 +113,15 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
     window.open(window.location.href, '_blank', 'noopener,noreferrer');
   };
 
-  const handleSaveName = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (nameInput.trim()) {
-      updateGuestName(nameInput.trim());
-      setIsEditingName(false);
-    }
-  };
-
-  const displayName = user?.displayName || guestName || 'Ramesh';
-  const email = user?.email || 'Active Local Profile';
+  const displayName = user?.displayName || 'Guest Learner';
+  const email = user?.email || 'Not signed in';
   const photoURL = user?.photoURL;
   const initials = displayName
     .split(' ')
     .map((n) => n[0])
     .join('')
     .substring(0, 2)
-    .toUpperCase() || 'R';
+    .toUpperCase() || 'G';
 
   const displayedError = localError || authError;
   const isDomainError =
@@ -190,6 +177,19 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
 
         {/* Profile Content */}
         <div className="p-4 sm:p-6 space-y-5">
+          {/* Action Required Banner if redirected for auth */}
+          {authPromptReason && (
+            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-2.5 text-xs text-amber-300 animate-in fade-in duration-150">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
+              <div>
+                <p className="font-bold text-amber-400">Sign-in Required</p>
+                <p className="mt-0.5 text-amber-200/90 leading-relaxed">
+                  Please sign in with Google to {authPromptReason}.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Error Banner & Dedicated Firebase Domain Assistant */}
           {displayedError && (
             <div className="space-y-3">
@@ -321,96 +321,75 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
             </div>
           )}
 
-          {/* User Account Card with Editable Learner Name */}
+          {/* User Account Card */}
           <div
             className={`p-4 rounded-2xl border transition-all ${
               isDark ? 'bg-zinc-900/60 border-zinc-800/80' : 'bg-slate-50 border-slate-200/80'
             }`}
           >
             <div className="flex items-center gap-4">
-              {photoURL ? (
-                <img
-                  src={photoURL}
-                  alt={displayName}
-                  className="w-14 h-14 rounded-2xl object-cover border-2 border-emerald-500/40 shadow-sm"
-                  referrerPolicy="no-referrer"
-                />
+              {user ? (
+                photoURL ? (
+                  <img
+                    src={photoURL}
+                    alt={displayName}
+                    className="w-14 h-14 rounded-2xl object-cover border-2 border-emerald-500/40 shadow-sm"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 font-serif italic text-xl font-bold flex items-center justify-center shadow-xs">
+                    {initials}
+                  </div>
+                )
               ) : (
-                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 font-serif italic text-xl font-bold flex items-center justify-center shadow-xs">
-                  {initials}
+                <div
+                  className={`w-14 h-14 rounded-2xl border flex items-center justify-center text-xl shadow-xs ${
+                    isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-400' : 'bg-slate-200 border-slate-300 text-slate-500'
+                  }`}
+                >
+                  <User className="w-7 h-7" />
                 </div>
               )}
 
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  {isEditingName && !user ? (
-                    <form onSubmit={handleSaveName} className="flex items-center gap-1.5">
-                      <input
-                        type="text"
-                        value={nameInput}
-                        onChange={(e) => setNameInput(e.target.value)}
-                        placeholder="Enter your name"
-                        className={`text-sm font-semibold px-2 py-0.5 rounded-lg border focus:outline-none focus:ring-1 focus:ring-emerald-500 ${
-                          isDark
-                            ? 'bg-zinc-800 border-zinc-700 text-white'
-                            : 'bg-white border-slate-300 text-slate-900'
-                        }`}
-                        autoFocus
-                      />
-                      <button
-                        type="submit"
-                        className="p-1 rounded-lg bg-emerald-500 text-black hover:bg-emerald-400"
-                        title="Save name"
-                      >
-                        <Save className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setIsEditingName(false)}
-                        className="p-1 rounded-lg text-zinc-400 hover:text-zinc-200"
-                        title="Cancel"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </form>
-                  ) : (
-                    <>
+                {user ? (
+                  <>
+                    <div className="flex items-center gap-2">
                       <h4 className="text-base font-serif italic font-bold truncate">
                         {displayName}
                       </h4>
-                      {!user && (
-                        <button
-                          onClick={() => {
-                            setNameInput(displayName);
-                            setIsEditingName(true);
-                          }}
-                          className={`p-1 rounded-md transition-colors ${
-                            isDark
-                              ? 'text-zinc-400 hover:text-white hover:bg-zinc-800'
-                              : 'text-slate-400 hover:text-slate-800 hover:bg-slate-200'
-                          }`}
-                          title="Edit learner profile name"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </>
-                  )}
-
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 shrink-0">
-                    Lv.{stats.level}
-                  </span>
-                </div>
-                <p
-                  className={`text-xs font-mono truncate mt-0.5 ${
-                    isDark ? 'text-zinc-400' : 'text-slate-500'
-                  }`}
-                >
-                  {email}
-                </p>
-                <p className="text-[11px] font-mono text-emerald-500 font-semibold mt-0.5">
-                  Rank: {getRankName(stats.level)}
-                </p>
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 shrink-0">
+                        Lv.{stats.level}
+                      </span>
+                    </div>
+                    <p
+                      className={`text-xs font-mono truncate mt-0.5 ${
+                        isDark ? 'text-zinc-400' : 'text-slate-500'
+                      }`}
+                    >
+                      {email}
+                    </p>
+                    <p className="text-[11px] font-mono text-emerald-500 font-semibold mt-0.5">
+                      Rank: {getRankName(stats.level)}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h4 className="text-base font-bold text-zinc-200">
+                      Guest Learner
+                    </h4>
+                    <p
+                      className={`text-xs font-mono truncate mt-0.5 ${
+                        isDark ? 'text-zinc-400' : 'text-slate-500'
+                      }`}
+                    >
+                      Not signed in
+                    </p>
+                    <p className="text-[11px] text-amber-500 font-medium mt-0.5">
+                      Sign-in required to submit tests &amp; record progress
+                    </p>
+                  </>
+                )}
               </div>
             </div>
 
@@ -429,7 +408,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
                       : lastSyncedAt
                         ? `Synced to Firebase (${lastSyncedAt})`
                         : 'Connected to Firebase'
-                    : 'Active local session (all XP, mistakes & quizzes saved)'}
+                    : 'Sign in to sync learning history and submit tests'}
                 </span>
               </div>
               {isSyncing && <Loader2 className="w-3 h-3 animate-spin text-emerald-500" />}
@@ -447,14 +426,14 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
             >
               <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-500">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Cloud Multi-Device Backup</span>
+                <span>Google Sign-In Required</span>
               </div>
               <p
                 className={`text-xs leading-relaxed ${
                   isDark ? 'text-zinc-300' : 'text-slate-600'
                 }`}
               >
-                Sign in with Google to automatically back up your XP, 12-tense completion, daily streak, and mistake notebook across any browser.
+                Sign in with Google to submit tests, record certified scores, maintain your streak, and sync your mistake notebook across devices.
               </p>
 
               {/* Google Sign-in Button */}

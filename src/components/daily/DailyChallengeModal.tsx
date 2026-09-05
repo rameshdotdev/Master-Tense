@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ALL_PRACTICE_QUESTIONS } from '../../data/practiceQuestions';
 import { useApp } from '../../context/AppContext';
 import { InteractiveExercise } from '../practice/InteractiveExercise';
-import { X, Sparkles, Flame, CheckCircle2, Award } from 'lucide-react';
+import { X, Sparkles, Flame, CheckCircle2, Award, Lock } from 'lucide-react';
 
 interface DailyChallengeModalProps {
   isOpen: boolean;
@@ -13,7 +13,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
   isOpen,
   onClose
 }) => {
-  const { stats, completeDailyChallenge } = useApp();
+  const { stats, completeDailyChallenge, user, requireAuth } = useApp();
 
   const today = new Date().toISOString().split('T')[0];
   const isAlreadyCompletedToday = stats.dailyChallengeCompletedDate === today;
@@ -35,6 +35,9 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
     if (currentIdx < challengeQuestions.length - 1) {
       setCurrentIdx((prev) => prev + 1);
     } else {
+      if (!requireAuth('complete the daily streak challenge and claim +100 XP')) {
+        return;
+      }
       setCompletedInModal(true);
       completeDailyChallenge();
     }

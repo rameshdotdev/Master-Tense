@@ -25,12 +25,29 @@ interface TenseDetailPageProps {
 }
 
 export const TenseDetailPage: React.FC<TenseDetailPageProps> = ({ tense }) => {
-  const { navigate, stats, markLessonComplete, toggleFavoriteTense, isDark } = useApp();
+  const {
+    navigate,
+    stats,
+    markLessonComplete,
+    toggleFavoriteTense,
+    isDark,
+    requireAuth
+  } = useApp();
 
   const isCompleted = stats.completedLessons.includes(tense.id);
   const isFavorited = stats.favoritedTenses.includes(tense.id);
 
   const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
+
+  const handleToggleFavorite = () => {
+    if (!requireAuth('bookmark tenses to your account')) return;
+    toggleFavoriteTense(tense.id);
+  };
+
+  const handleMarkMastered = () => {
+    if (!requireAuth('mark lessons as mastered and claim +50 XP')) return;
+    markLessonComplete(tense.id);
+  };
 
   const getDifficultyBadge = (diff: string) => {
     switch (diff) {
@@ -59,7 +76,7 @@ export const TenseDetailPage: React.FC<TenseDetailPageProps> = ({ tense }) => {
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => toggleFavoriteTense(tense.id)}
+            onClick={handleToggleFavorite}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:border-zinc-700 transition-colors"
           >
             <Star
@@ -102,7 +119,7 @@ export const TenseDetailPage: React.FC<TenseDetailPageProps> = ({ tense }) => {
               </div>
             ) : (
               <button
-                onClick={() => markLessonComplete(tense.id)}
+                onClick={handleMarkMastered}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold uppercase tracking-wider text-xs transition-all shadow-lg shadow-emerald-500/20"
               >
                 <Award className="w-4 h-4" />

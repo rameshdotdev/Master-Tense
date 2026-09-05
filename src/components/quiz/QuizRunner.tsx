@@ -14,11 +14,23 @@ import {
   Sparkles,
   AlertCircle,
   BookOpen,
-  ChevronRight
+  ChevronRight,
+  Lock,
+  Loader2,
+  ShieldCheck,
+  ExternalLink
 } from 'lucide-react';
 
 export const QuizRunner: React.FC = () => {
-  const { recordQuizResult, navigate } = useApp();
+  const {
+    recordQuizResult,
+    navigate,
+    user,
+    signInWithGoogle,
+    openProfileModal,
+    isAuthLoading,
+    authError
+  } = useApp();
 
   // Quiz Configuration State
   const [questionCount, setQuestionCount] = useState<number>(10);
@@ -26,11 +38,14 @@ export const QuizRunner: React.FC = () => {
   const [difficulty, setDifficulty] = useState<string>('mixed'); // 'Beginner' | 'Intermediate' | 'Advanced' | 'mixed'
 
   // Quiz Execution State
-  const [quizState, setQuizState] = useState<'config' | 'active' | 'results'>('config');
+  const [quizState, setQuizState] = useState<'config' | 'active' | 'auth-required' | 'results'>('config');
   const [activeQuestions, setActiveQuestions] = useState<PracticeQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [pendingResult, setPendingResult] = useState<QuizResult | null>(null);
+  const [signingIn, setSigningIn] = useState(false);
+  const [localAuthError, setLocalAuthError] = useState<string | null>(null);
 
   // Timer
   const [secondsElapsed, setSecondsElapsed] = useState(0);
@@ -38,6 +53,16 @@ export const QuizRunner: React.FC = () => {
 
   // Completed Result Cache
   const [lastResult, setLastResult] = useState<QuizResult | null>(null);
+
+  // Auto-submit pending test as soon as user logs in
+  useEffect(() => {
+    if (user && pendingResult && quizState === 'auth-required') {
+      setLastResult(pendingResult);
+      recordQuizResult(pendingResult);
+      setPendingResult(null);
+      setQuizState('results');
+    }
+  }, [user, pendingResult, quizState, recordQuizResult]);
 
   // Start Quiz
   const startQuiz = () => {
@@ -146,9 +171,27 @@ export const QuizRunner: React.FC = () => {
         recommendation: rec
       };
 
-      setLastResult(res);
-      recordQuizResult(res);
-      setQuizState('results');
+      if (!user) {
+        setPendingResult(res);
+        setQuizState('auth-required');
+      } else {
+        setLastResult(res);
+        recordQuizResult(res);
+        setQuizState('results');
+      }
+    }
+  };
+
+  const handleSignInToSubmit = async () => {
+    setLocalAuthError(null);
+    setSigningIn(true);
+    try {
+      await signInWithGoogle();
+    } catch (err: unknown) {
+      const error = err as Error;
+      setLocalAuthError(error.message || 'Sign in with Google could not be completed.');
+    } finally {
+      setSigningIn(false);
     }
   };
 
@@ -174,6 +217,29 @@ export const QuizRunner: React.FC = () => {
             Choose your question count, target tense category, and difficulty level. Receive a detailed score report with weak area diagnostics.
           </p>
         </div>
+
+        {/* Login notice if guest */}
+        {!user && (
+          <div className="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                <Lock className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="font-bold text-amber-300">Sign-in Required for Test Submission</p>
+                <p className="text-zinc-400 text-[11px] mt-0.5 leading-relaxed">
+                  You can configure and practice tests freely, but Google sign-in is required to submit your test and earn certified scores.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => openProfileModal('submit tests and record verified scores')}
+              className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs shrink-0 transition-colors self-start sm:self-center"
+            >
+              Sign In Now
+            </button>
+          </div>
+        )}
 
         <div className="bg-[#0D0D0D] rounded-3xl border border-zinc-800 p-6 sm:p-8 shadow-sm space-y-6">
           {/* Question Count */}
@@ -375,10 +441,106 @@ export const QuizRunner: React.FC = () => {
             className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-black font-bold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2"
           >
             <span>
-              {currentIndex < activeQuestions.length - 1 ? 'Next Question' : 'Submit & View Results'}
+              {currentIndex < activeQuestions.length - 1
+                ? 'Next Question'
+                : user
+                  ? 'Submit & View Results'
+                  : 'Sign in with Google & Submit Test'}
             </span>
             <ChevronRight className="w-4 h-4" />
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 2.5 AUTH REQUIRED TO SUBMIT VIEW
+  if (quizState === 'auth-required' && pendingResult) {
+    const displayedErr = localAuthError || authError;
+    return (
+      <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+        <div className="bg-[#0D0D0D] rounded-3xl border border-zinc-800 p-6 sm:p-8 shadow-xl text-center space-y-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-amber-400 mx-auto">
+            <Lock className="w-8 h-8" />
+          </div>
+
+          <div className="space-y-2">
+            <span className="text-[10px] uppercase font-mono font-bold tracking-widest text-amber-500 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
+              Authentication Required
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-serif italic text-white">
+              Sign In to Submit Test
+            </h2>
+            <p className="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">
+              You have answered all <span className="text-white font-bold">{pendingResult.totalQuestions} questions</span>! To submit your test, record your official score, and sync your mastery across devices, please sign in with Google.
+            </p>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-zinc-900/80 border border-zinc-800 text-left space-y-2 text-xs font-mono">
+            <div className="flex items-center justify-between text-zinc-300">
+              <span>Completed Questions:</span>
+              <span className="text-emerald-400 font-bold">{pendingResult.totalQuestions} / {pendingResult.totalQuestions}</span>
+            </div>
+            <div className="flex items-center justify-between text-zinc-300">
+              <span>Time Taken:</span>
+              <span className="text-zinc-200">{formatTime(pendingResult.timeSpentSeconds)}</span>
+            </div>
+            <div className="flex items-center justify-between text-zinc-300">
+              <span>Status:</span>
+              <span className="text-amber-400 font-semibold">Answers preserved in memory</span>
+            </div>
+          </div>
+
+          {displayedErr && (
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs text-left">
+              <p className="font-semibold">{displayedErr}</p>
+            </div>
+          )}
+
+          {/* Google Sign In Button */}
+          <div className="space-y-3">
+            <button
+              onClick={handleSignInToSubmit}
+              disabled={signingIn || isAuthLoading}
+              className="w-full flex items-center justify-center gap-3 py-3.5 px-6 rounded-2xl bg-white hover:bg-zinc-100 text-zinc-900 font-bold text-xs sm:text-sm transition-all shadow-lg hover:scale-[1.01] disabled:opacity-50"
+            >
+              {signingIn || isAuthLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-emerald-600" />
+                  <span>Signing in with Google...</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" viewBox="0 0 24 24">
+                    <path
+                      fill="#4285F4"
+                      d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.15z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.87-3.01c-1.07.72-2.45 1.16-4.06 1.16-3.13 0-5.78-2.11-6.73-4.96H1.26v3.12C3.26 21.36 7.35 24 12 24z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.59H1.26C.46 8.19 0 9.98 0 12s.46 3.81 1.26 5.41l4.01-3.12z"
+                    />
+                    <path
+                      fill="#EA4335"
+                      d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.26 2.64 1.26 6.59l4.01 3.12c.95-2.85 3.6-4.96 6.73-4.96z"
+                    />
+                  </svg>
+                  <span>Sign In with Google to Submit Test</span>
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={() => openProfileModal('submit your test and record your score')}
+              className="text-xs text-zinc-400 hover:text-emerald-400 underline font-mono transition-colors block mx-auto"
+            >
+              Need help signing in? Open Account Panel
+            </button>
+          </div>
         </div>
       </div>
     );

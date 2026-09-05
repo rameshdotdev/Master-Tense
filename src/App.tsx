@@ -19,10 +19,16 @@ import { UserProfileModal } from './components/profile/UserProfileModal';
 import { TENSES_DATA } from './data/tensesData';
 
 const MainContent: React.FC = () => {
-  const { activeRoute, navigate, isDark } = useApp();
+  const {
+    activeRoute,
+    navigate,
+    isDark,
+    isProfileOpen,
+    openProfileModal,
+    closeProfileModal
+  } = useApp();
 
   const [isDailyOpen, setIsDailyOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   // Render view based on route
   const renderRouteView = () => {
@@ -69,7 +75,7 @@ const MainContent: React.FC = () => {
       {/* Navbar */}
       <Navbar
         onOpenDaily={() => setIsDailyOpen(true)}
-        onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenProfile={() => openProfileModal()}
       />
 
       {/* Main Content Area with safe padding for mobile bottom bar */}
@@ -83,7 +89,7 @@ const MainContent: React.FC = () => {
       {/* Persistent Mobile Bottom Bar */}
       <MobileBottomNav
         onOpenDaily={() => setIsDailyOpen(true)}
-        onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenProfile={() => openProfileModal()}
       />
 
       {/* Global Modals */}
@@ -94,7 +100,7 @@ const MainContent: React.FC = () => {
       />
       <UserProfileModal
         isOpen={isProfileOpen}
-        onClose={() => setIsProfileOpen(false)}
+        onClose={closeProfileModal}
       />
     </div>
   );

@@ -9,7 +9,8 @@ import {
   RefreshCw,
   Lightbulb,
   ArrowRight,
-  BookOpen
+  BookOpen,
+  Lock
 } from 'lucide-react';
 
 interface InteractiveExerciseProps {
@@ -23,7 +24,7 @@ export const InteractiveExercise: React.FC<InteractiveExerciseProps> = ({
   onNext,
   showNextButton = true
 }) => {
-  const { recordQuestionAnswer, stats } = useApp();
+  const { recordQuestionAnswer, stats, user, requireAuth } = useApp();
 
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [rearrangedWords, setRearrangedWords] = useState<string[]>([]);
@@ -68,6 +69,10 @@ export const InteractiveExercise: React.FC<InteractiveExerciseProps> = ({
   // Submit check
   const handleSubmit = (chosenAnswer: string) => {
     if (isAnswered) return;
+
+    if (!requireAuth('submit exercise answers and save your learning progress')) {
+      return;
+    }
 
     const trimmedUser = chosenAnswer.trim();
     const trimmedCorrect = question.correctAnswer.trim();
@@ -127,11 +132,27 @@ export const InteractiveExercise: React.FC<InteractiveExerciseProps> = ({
       )}
 
       {/* Prompt / Question text */}
-      <div className="mb-5">
+      <div className="mb-4">
         <p className="text-base sm:text-lg font-serif italic text-white leading-snug">
           {question.prompt}
         </p>
       </div>
+
+      {/* Login required banner for guests */}
+      {!user && (
+        <div className="mb-4 px-3.5 py-2 rounded-xl bg-amber-950/20 border border-amber-500/25 flex items-center justify-between gap-2 text-xs">
+          <span className="text-amber-300 font-mono text-[11px] flex items-center gap-1.5">
+            <Lock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <span>Sign in required to submit answers &amp; earn XP</span>
+          </span>
+          <button
+            onClick={() => requireAuth('submit exercise answers and track your progress')}
+            className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-[11px] shrink-0 transition-colors"
+          >
+            Sign In
+          </button>
+        </div>
+      )}
 
       {/* Render Options based on type */}
 

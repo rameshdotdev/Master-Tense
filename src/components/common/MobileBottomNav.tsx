@@ -223,10 +223,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
                 )}
                 <div className="min-w-0">
                   <span className="text-xs font-bold text-white block truncate">
-                    {user ? (user.displayName || 'Account') : 'My Profile'}
+                    {user ? (user.displayName || 'Account') : 'Sign In with Google'}
                   </span>
                   <span className="text-[10px] font-mono text-emerald-400">
-                    {user ? 'Google Active' : `Lv.${stats.level} (${stats.xp} XP)`}
+                    {user ? 'Google Active' : 'Not signed in'}
                   </span>
                 </div>
               </button>

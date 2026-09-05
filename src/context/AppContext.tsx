@@ -51,12 +51,13 @@ interface AppContextType {
   signOut: () => Promise<void>;
   isSyncing: boolean;
   lastSyncedAt: string | null;
-  guestName: string;
-  updateGuestName: (name: string) => void;
+  isProfileOpen: boolean;
+  authPromptReason: string | null;
+  openProfileModal: (reason?: string) => void;
+  closeProfileModal: () => void;
+  requireAuth: (reason: string) => boolean;
 }
 
-const GUEST_STORAGE_KEY = 'english_tenses_guest_data_v2';
-const GUEST_NAME_KEY = 'english_tenses_guest_name';
 const THEME_KEY = 'english_tenses_theme';
 
 const INITIAL_STATS: UserStats = {
@@ -152,37 +153,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Flag to avoid syncing local stats to cloud before the initial fetch is loaded
   const isCloudLoadedRef = useRef<boolean>(false);
 
-  // Guest Learner Name personalization
-  const [guestName, setGuestName] = useState<string>(() => {
-    try {
-      return localStorage.getItem(GUEST_NAME_KEY) || 'Ramesh';
-    } catch {
-      return 'Ramesh';
-    }
-  });
+  // Global Profile / Auth Modal State
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [authPromptReason, setAuthPromptReason] = useState<string | null>(null);
 
-  const updateGuestName = (name: string) => {
-    const clean = name.trim() || 'Ramesh';
-    setGuestName(clean);
-    try {
-      localStorage.setItem(GUEST_NAME_KEY, clean);
-    } catch {
-      // ignore
+  const openProfileModal = (reason?: string) => {
+    if (reason) {
+      setAuthPromptReason(reason);
+    } else {
+      setAuthPromptReason(null);
     }
+    setIsProfileOpen(true);
   };
 
-  // Stats: initialize with guest local data or clean INITIAL_STATS
-  const [stats, setStats] = useState<UserStats>(() => {
-    try {
-      const raw = localStorage.getItem(GUEST_STORAGE_KEY);
-      if (raw) {
-        return { ...INITIAL_STATS, ...JSON.parse(raw) };
-      }
-    } catch {
-      // fallback
-    }
-    return INITIAL_STATS;
-  });
+  const closeProfileModal = () => {
+    setIsProfileOpen(false);
+    setAuthPromptReason(null);
+  };
+
+  const requireAuth = (reason: string): boolean => {
+    if (user) return true;
+    openProfileModal(reason);
+    return false;
+  };
+
+  // Stats: default clean INITIAL_STATS until authenticated
+  const [stats, setStats] = useState<UserStats>(INITIAL_STATS);
 
   // Listen to Firebase Auth state changes
   useEffect(() => {
@@ -208,18 +204,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           setIsSyncing(false);
         }
       } else {
-        // User logged out: load guest stats
+        // User logged out: reset stats to clean state
         isCloudLoadedRef.current = false;
-        try {
-          const guestRaw = localStorage.getItem(GUEST_STORAGE_KEY);
-          if (guestRaw) {
-            setStats({ ...INITIAL_STATS, ...JSON.parse(guestRaw) });
-          } else {
-            setStats(INITIAL_STATS);
-          }
-        } catch {
-          setStats(INITIAL_STATS);
-        }
+        setStats(INITIAL_STATS);
         setLastSyncedAt(null);
       }
       setIsAuthLoading(false);
@@ -228,7 +215,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return () => unsubscribe();
   }, []);
 
-  // Save to localStorage & Cloud Firestore
+  // Save to localStorage & Cloud Firestore when user is authenticated
   useEffect(() => {
     if (user) {
       // Save to user local cache
@@ -249,9 +236,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             setIsSyncing(false);
           });
       }
-    } else {
-      // Save to guest cache
-      localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(stats));
     }
   }, [stats, user]);
 
@@ -489,8 +473,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (user) {
       localStorage.removeItem(`english_tenses_user_${user.uid}`);
       saveStatsToFirestore(user.uid, INITIAL_STATS);
-    } else {
-      localStorage.removeItem(GUEST_STORAGE_KEY);
     }
     setStats(INITIAL_STATS);
   };
@@ -582,8 +564,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         signOut,
         isSyncing,
         lastSyncedAt,
-        guestName,
-        updateGuestName
+        isProfileOpen,
+        authPromptReason,
+        openProfileModal,
+        closeProfileModal,
+        requireAuth
       }}
     >
       {children}

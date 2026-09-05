@@ -14,11 +14,12 @@ import {
   BookOpen,
   Calendar,
   Layers,
-  Star
+  Star,
+  Lock
 } from 'lucide-react';
 
 export const ProgressDashboard: React.FC = () => {
-  const { stats, achievements, navigate } = useApp();
+  const { stats, achievements, navigate, user, requireAuth } = useApp();
 
   const masteredCount = stats.completedLessons.length;
   const masteryPercentage = Math.round((masteredCount / 12) * 100);
@@ -82,6 +83,29 @@ export const ProgressDashboard: React.FC = () => {
           Monitor your grammar milestones, question accuracy, streaks, and recommended study paths.
         </p>
       </div>
+
+      {/* Login notice for guests */}
+      {!user && (
+        <div className="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+              <Lock className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="font-bold text-amber-300">Guest Mode: Sign In to Save Verified Mastery</p>
+              <p className="text-zinc-400 text-[11px] mt-0.5 leading-relaxed">
+                Sign in with Google to permanently track your milestones, streak data, and test scores across all your devices.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => requireAuth('save your dashboard progress and achievements')}
+            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs shrink-0 transition-colors self-start sm:self-center"
+          >
+            Sign In with Google
+          </button>
+        </div>
+      )}
 
       {/* Top 4 KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

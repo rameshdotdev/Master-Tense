@@ -13,7 +13,8 @@ import {
   Layers,
   GitCompare,
   BookMarked,
-  BarChart3
+  BarChart3,
+  User
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -37,8 +38,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDaily, onOpenProfile }) =>
     toggleTheme,
     setIsSearchOpen,
     stats,
-    user,
-    guestName
+    user
   } = useApp();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -259,12 +259,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDaily, onOpenProfile }) =>
             {/* Profile Avatar Trigger */}
             <button
               onClick={onOpenProfile}
-              className={`relative min-h-[36px] px-2 py-1 rounded-xl border text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all ${
+              className={`relative min-h-[36px] px-2.5 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-2 shadow-xs transition-all ${
                 isDark
-                  ? 'bg-zinc-900 border-zinc-800 text-emerald-400 hover:border-emerald-500/70 hover:bg-zinc-800'
-                  : 'bg-slate-100 border-slate-200 text-emerald-700 hover:border-emerald-500 hover:bg-slate-200'
+                  ? 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-emerald-500/70 hover:bg-zinc-800'
+                  : 'bg-slate-100 border-slate-200 text-slate-700 hover:border-emerald-500 hover:bg-slate-200'
               }`}
-              title={user ? `${user.displayName || user.email} (Lv.${stats.level})` : `${guestName} (Lv.${stats.level})`}
+              title={user ? (user.displayName || user.email || 'Google Account') : 'Sign in to Google Account'}
               aria-label="User Profile"
             >
               {user?.photoURL ? (
@@ -276,10 +276,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDaily, onOpenProfile }) =>
                 />
               ) : (
                 <span className="w-5 h-5 rounded-lg bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-[10px] font-bold">
-                  {user ? (user.displayName?.[0] || 'U') : (guestName?.[0] || 'R')}
+                  {user ? (user.displayName?.[0] || 'U') : <User className="w-3.5 h-3.5" />}
                 </span>
               )}
-              <span className="font-mono text-[11px]">Lv.{stats.level}</span>
+              {user ? (
+                <span className="text-xs font-semibold max-w-[90px] truncate hidden sm:inline text-white">
+                  {user.displayName?.split(' ')[0] || 'Account'}
+                </span>
+              ) : (
+                <span className="text-xs font-medium text-emerald-500 hidden sm:inline">
+                  Sign In
+                </span>
+              )}
               {user && (
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="Google account active" />
               )}
