@@ -167,3 +167,12 @@ export interface UserStats {
   dailyChallengeCompletedDate?: string;
   flashcardRatings: Record<string, 'easy' | 'review' | 'difficult'>; // flashcard id -> rating
 }
+
+export interface GrammarExplanationResponse {
+  source: 'gemini' | 'fallback';
+  verdict: string;
+  grammaticalReasoning: string;
+  whyUserAnswerWorkedOrFailed: string;
+  signalClues: string[];
+  memoryTip: string;
+}

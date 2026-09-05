@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   ExternalLink
 } from 'lucide-react';
+import { HelpMeUnderstand } from './HelpMeUnderstand';
 
 export const QuizRunner: React.FC = () => {
   const {
@@ -36,6 +37,7 @@ export const QuizRunner: React.FC = () => {
   const [questionCount, setQuestionCount] = useState<number>(10);
   const [category, setCategory] = useState<string>('mixed'); // 'present' | 'past' | 'future' | 'mixed'
   const [difficulty, setDifficulty] = useState<string>('mixed'); // 'Beginner' | 'Intermediate' | 'Advanced' | 'mixed'
+  const [instantFeedback, setInstantFeedback] = useState<boolean>(true);
 
   // Quiz Execution State
   const [quizState, setQuizState] = useState<'config' | 'active' | 'auth-required' | 'results'>('config');
@@ -43,6 +45,7 @@ export const QuizRunner: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [isCurrentChecked, setIsCurrentChecked] = useState<boolean>(false);
   const [pendingResult, setPendingResult] = useState<QuizResult | null>(null);
   const [signingIn, setSigningIn] = useState(false);
   const [localAuthError, setLocalAuthError] = useState<string | null>(null);
@@ -83,6 +86,7 @@ export const QuizRunner: React.FC = () => {
     setCurrentIndex(0);
     setUserAnswers({});
     setSelectedOption(null);
+    setIsCurrentChecked(false);
     setSecondsElapsed(0);
     setQuizState('active');
 
@@ -102,83 +106,93 @@ export const QuizRunner: React.FC = () => {
 
   // Answer current question
   const handleSelectAnswer = (ans: string) => {
+    if (isCurrentChecked) return;
     setSelectedOption(ans);
   };
 
-  const handleConfirmNext = () => {
+  const handleCheckAnswer = () => {
+    if (!selectedOption) return;
+    setIsCurrentChecked(true);
+  };
+
+  const handleNextQuestion = () => {
     if (!selectedOption) return;
 
     const currentQ = activeQuestions[currentIndex];
     const newAnswers = { ...userAnswers, [currentQ.id]: selectedOption };
     setUserAnswers(newAnswers);
     setSelectedOption(null);
+    setIsCurrentChecked(false);
 
     if (currentIndex < activeQuestions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      // Finish Quiz!
-      if (timerRef.current) clearInterval(timerRef.current);
+      finishQuiz(newAnswers);
+    }
+  };
 
-      const records: QuizQuestionRecord[] = activeQuestions.map((q) => {
-        const uAns = newAnswers[q.id] || '';
-        const isCorrect = uAns.trim().toLowerCase() === q.correctAnswer.trim().toLowerCase();
-        return {
-          question: q,
-          userAnswer: uAns,
-          isCorrect
-        };
-      });
+  const finishQuiz = (finalAnswers: Record<string, string>) => {
+    if (timerRef.current) clearInterval(timerRef.current);
 
-      const score = records.filter((r) => r.isCorrect).length;
-      const total = records.length;
-      const percentage = Math.round((score / Math.max(1, total)) * 100);
-
-      // Weak tenses detection
-      const wrongByTense: Record<string, number> = {};
-      records.forEach((r) => {
-        if (!r.isCorrect) {
-          wrongByTense[r.question.tenseId] = (wrongByTense[r.question.tenseId] || 0) + 1;
-        }
-      });
-
-      const sortedWeak = Object.entries(wrongByTense)
-        .sort((a, b) => b[1] - a[1])
-        .map(([id]) => id);
-
-      // Smart recommendation calculation
-      let rec = 'Keep up the daily practice to maintain consistency across all tenses!';
-      if (sortedWeak.length > 0) {
-        const weakestTense = TENSES_DATA.find((t) => t.id === sortedWeak[0]);
-        const weakCount = wrongByTense[sortedWeak[0]];
-        rec = `You made ${weakCount} mistake${weakCount > 1 ? 's' : ''} with ${
-          weakestTense?.name || 'this tense'
-        }. We recommend reviewing the ${weakestTense?.name || ''} lesson before your next quiz.`;
-      } else if (percentage === 100) {
-        rec = 'Flawless performance! You have achieved complete mastery over this tense set.';
-      }
-
-      const res: QuizResult = {
-        id: 'quiz-' + Date.now(),
-        date: new Date().toISOString().split('T')[0],
-        totalQuestions: total,
-        score,
-        percentage,
-        timeSpentSeconds: secondsElapsed,
-        category,
-        difficulty,
-        records,
-        weakTenses: sortedWeak,
-        recommendation: rec
+    const records: QuizQuestionRecord[] = activeQuestions.map((q) => {
+      const uAns = finalAnswers[q.id] || '';
+      const isCorrect = uAns.trim().toLowerCase() === q.correctAnswer.trim().toLowerCase();
+      return {
+        question: q,
+        userAnswer: uAns,
+        isCorrect
       };
+    });
 
-      if (!user) {
-        setPendingResult(res);
-        setQuizState('auth-required');
-      } else {
-        setLastResult(res);
-        recordQuizResult(res);
-        setQuizState('results');
+    const score = records.filter((r) => r.isCorrect).length;
+    const total = records.length;
+    const percentage = Math.round((score / Math.max(1, total)) * 100);
+
+    // Weak tenses detection
+    const wrongByTense: Record<string, number> = {};
+    records.forEach((r) => {
+      if (!r.isCorrect) {
+        wrongByTense[r.question.tenseId] = (wrongByTense[r.question.tenseId] || 0) + 1;
       }
+    });
+
+    const sortedWeak = Object.entries(wrongByTense)
+      .sort((a, b) => b[1] - a[1])
+      .map(([id]) => id);
+
+    // Smart recommendation calculation
+    let rec = 'Keep up the daily practice to maintain consistency across all tenses!';
+    if (sortedWeak.length > 0) {
+      const weakestTense = TENSES_DATA.find((t) => t.id === sortedWeak[0]);
+      const weakCount = wrongByTense[sortedWeak[0]];
+      rec = `You made ${weakCount} mistake${weakCount > 1 ? 's' : ''} with ${
+        weakestTense?.name || 'this tense'
+      }. We recommend reviewing the ${weakestTense?.name || ''} lesson before your next quiz.`;
+    } else if (percentage === 100) {
+      rec = 'Flawless performance! You have achieved complete mastery over this tense set.';
+    }
+
+    const res: QuizResult = {
+      id: 'quiz-' + Date.now(),
+      date: new Date().toISOString().split('T')[0],
+      totalQuestions: total,
+      score,
+      percentage,
+      timeSpentSeconds: secondsElapsed,
+      category,
+      difficulty,
+      records,
+      weakTenses: sortedWeak,
+      recommendation: rec
+    };
+
+    if (!user) {
+      setPendingResult(res);
+      setQuizState('auth-required');
+    } else {
+      setLastResult(res);
+      recordQuizResult(res);
+      setQuizState('results');
     }
   };
 
@@ -318,6 +332,30 @@ export const QuizRunner: React.FC = () => {
             </div>
           </div>
 
+          {/* Instant AI Explanations Toggle */}
+          <div className="flex items-center justify-between p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800">
+            <div className="space-y-0.5 pr-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-purple-400" />
+                <span className="text-xs font-bold text-zinc-200">Instant AI Explanations</span>
+              </div>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                Receive immediate feedback and Gemini 'Help me understand' grammatical reasoning as you answer each question.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setInstantFeedback((prev) => !prev)}
+              className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all border shrink-0 ${
+                instantFeedback
+                  ? 'bg-purple-950/60 border-purple-500/60 text-purple-300'
+                  : 'bg-zinc-900 border-zinc-700 text-zinc-500'
+              }`}
+            >
+              {instantFeedback ? 'Enabled' : 'Disabled'}
+            </button>
+          </div>
+
           {/* Start Quiz Action */}
           <button
             onClick={startQuiz}
@@ -335,6 +373,10 @@ export const QuizRunner: React.FC = () => {
   if (quizState === 'active') {
     const currentQ = activeQuestions[currentIndex];
     const progressPercent = Math.round(((currentIndex + 1) / activeQuestions.length) * 100);
+    const tenseName = TENSES_DATA.find((t) => t.id === currentQ.tenseId)?.name;
+    const isCurrentCorrect = selectedOption
+      ? selectedOption.trim().toLowerCase() === currentQ.correctAnswer.trim().toLowerCase()
+      : false;
 
     return (
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-4 sm:space-y-6">
@@ -352,9 +394,28 @@ export const QuizRunner: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-xs font-bold">
-            <Timer className="w-4 h-4 text-emerald-400" />
-            <span>{formatTime(secondsElapsed)}</span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setInstantFeedback((prev) => !prev);
+                setIsCurrentChecked(false);
+              }}
+              className={`hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[10px] font-mono font-bold transition-all border ${
+                instantFeedback
+                  ? 'bg-purple-950/40 border-purple-500/40 text-purple-300'
+                  : 'bg-zinc-900 border-zinc-800 text-zinc-500'
+              }`}
+              title="Toggle immediate AI grammatical explanations"
+            >
+              <Sparkles className="w-3 h-3 text-purple-400" />
+              <span>Instant AI: {instantFeedback ? 'ON' : 'OFF'}</span>
+            </button>
+
+            <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-xs font-bold">
+              <Timer className="w-4 h-4 text-emerald-400" />
+              <span>{formatTime(secondsElapsed)}</span>
+            </div>
           </div>
         </div>
 
@@ -365,7 +426,7 @@ export const QuizRunner: React.FC = () => {
               {currentQ.type.replace(/-/g, ' ')}
             </span>
             <span className="text-[10px] font-mono font-semibold text-zinc-500">
-              {currentQ.category} tense
+              {tenseName || `${currentQ.category} tense`}
             </span>
           </div>
 
@@ -376,28 +437,50 @@ export const QuizRunner: React.FC = () => {
           {/* Render Options */}
           {currentQ.options && (
             <div className="space-y-2.5">
-              {currentQ.options.map((opt) => (
-                <button
-                  key={opt}
-                  onClick={() => handleSelectAnswer(opt)}
-                  className={`w-full min-h-[48px] p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-left text-xs sm:text-sm font-semibold transition-all flex items-center justify-between ${
-                    selectedOption === opt
-                      ? 'bg-emerald-950/30 border-emerald-500/80 text-emerald-300 shadow-sm'
-                      : 'bg-zinc-900/60 border-zinc-800 text-zinc-300 hover:border-zinc-700'
-                  }`}
-                >
-                  <span>{opt}</span>
-                  <div
-                    className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                      selectedOption === opt
-                        ? 'border-emerald-500 bg-emerald-500 text-black'
-                        : 'border-zinc-700'
-                    }`}
+              {currentQ.options.map((opt) => {
+                const isSelected = selectedOption === opt;
+                const isCorrectOpt = opt.trim().toLowerCase() === currentQ.correctAnswer.trim().toLowerCase();
+
+                let btnStyle = 'bg-zinc-900/60 border-zinc-800 text-zinc-300 hover:border-zinc-700';
+
+                if (isCurrentChecked) {
+                  if (isCorrectOpt) {
+                    btnStyle = 'bg-emerald-950/40 border-emerald-500 text-emerald-200 font-bold';
+                  } else if (isSelected && !isCorrectOpt) {
+                    btnStyle = 'bg-rose-950/40 border-rose-500 text-rose-200';
+                  } else {
+                    btnStyle = 'bg-zinc-900/40 border-zinc-800/60 text-zinc-500 opacity-60';
+                  }
+                } else if (isSelected) {
+                  btnStyle = 'bg-emerald-950/30 border-emerald-500/80 text-emerald-300 shadow-sm';
+                }
+
+                return (
+                  <button
+                    key={opt}
+                    disabled={isCurrentChecked}
+                    onClick={() => handleSelectAnswer(opt)}
+                    className={`w-full min-h-[48px] p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-left text-xs sm:text-sm font-semibold transition-all flex items-center justify-between ${btnStyle}`}
                   >
-                    {selectedOption === opt && <span className="w-2 h-2 rounded-full bg-black" />}
-                  </div>
-                </button>
-              ))}
+                    <span>{opt}</span>
+                    <div
+                      className={`w-5 h-5 rounded-full border flex items-center justify-center ${
+                        isCurrentChecked && isCorrectOpt
+                          ? 'border-emerald-500 bg-emerald-500 text-black'
+                          : isCurrentChecked && isSelected && !isCorrectOpt
+                          ? 'border-rose-500 bg-rose-500 text-white'
+                          : isSelected
+                          ? 'border-emerald-500 bg-emerald-500 text-black'
+                          : 'border-zinc-700'
+                      }`}
+                    >
+                      {isCurrentChecked && isCorrectOpt && <CheckCircle2 className="w-3.5 h-3.5 text-black" />}
+                      {isCurrentChecked && isSelected && !isCorrectOpt && <XCircle className="w-3.5 h-3.5 text-white" />}
+                      {!isCurrentChecked && isSelected && <span className="w-2 h-2 rounded-full bg-black" />}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           )}
 
@@ -417,38 +500,104 @@ export const QuizRunner: React.FC = () => {
                   currentQ.scrambledWords.join(' ')
                 ]
                   .sort()
-                  .map((cand, cIdx) => (
-                    <button
-                      key={cIdx}
-                      onClick={() => handleSelectAnswer(cand)}
-                      className={`w-full p-3.5 rounded-2xl border text-left text-xs font-semibold transition-all ${
-                        selectedOption === cand
-                          ? 'bg-emerald-950/30 border-emerald-500 text-emerald-300'
-                          : 'bg-zinc-900/60 border-zinc-800 text-zinc-300'
-                      }`}
-                    >
-                      {cand}
-                    </button>
-                  ))}
+                  .map((cand, cIdx) => {
+                    const isSelected = selectedOption === cand;
+                    const isCorrectOpt = cand.trim().toLowerCase() === currentQ.correctAnswer.trim().toLowerCase();
+
+                    let candStyle = 'bg-zinc-900/60 border-zinc-800 text-zinc-300';
+                    if (isCurrentChecked) {
+                      if (isCorrectOpt) {
+                        candStyle = 'bg-emerald-950/40 border-emerald-500 text-emerald-200 font-bold';
+                      } else if (isSelected && !isCorrectOpt) {
+                        candStyle = 'bg-rose-950/40 border-rose-500 text-rose-200';
+                      } else {
+                        candStyle = 'bg-zinc-900/40 border-zinc-800/60 text-zinc-500 opacity-60';
+                      }
+                    } else if (isSelected) {
+                      candStyle = 'bg-emerald-950/30 border-emerald-500 text-emerald-300';
+                    }
+
+                    return (
+                      <button
+                        key={cIdx}
+                        disabled={isCurrentChecked}
+                        onClick={() => handleSelectAnswer(cand)}
+                        className={`w-full p-3.5 rounded-2xl border text-left text-xs font-semibold transition-all ${candStyle}`}
+                      >
+                        {cand}
+                      </button>
+                    );
+                  })}
               </div>
             </div>
           )}
 
-          {/* Confirm & Next button */}
-          <button
-            disabled={!selectedOption}
-            onClick={handleConfirmNext}
-            className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-black font-bold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2"
-          >
-            <span>
-              {currentIndex < activeQuestions.length - 1
-                ? 'Next Question'
-                : user
-                  ? 'Submit & View Results'
-                  : 'Sign in with Google & Submit Test'}
-            </span>
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          {/* Instant Feedback & AI Help Me Understand View */}
+          {instantFeedback && isCurrentChecked && selectedOption && (
+            <div className="space-y-3 pt-2">
+              <div
+                className={`p-4 rounded-2xl border ${
+                  isCurrentCorrect
+                    ? 'bg-emerald-950/20 border-emerald-500/40 text-emerald-200'
+                    : 'bg-rose-950/20 border-rose-500/40 text-rose-200'
+                }`}
+              >
+                <div className="flex items-center gap-2 font-bold text-xs sm:text-sm">
+                  {isCurrentCorrect ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                  )}
+                  <span>
+                    {isCurrentCorrect
+                      ? 'Correct answer! Great job.'
+                      : `Incorrect answer. The correct answer is "${currentQ.correctAnswer}".`}
+                  </span>
+                </div>
+                <p className="text-xs text-zinc-300 mt-1.5 leading-relaxed">
+                  <strong className="text-zinc-200">Rule: </strong> {currentQ.explanation}
+                </p>
+
+                {/* Gemini AI Help Me Understand Button */}
+                <HelpMeUnderstand
+                  prompt={currentQ.prompt}
+                  userAnswer={selectedOption}
+                  correctAnswer={currentQ.correctAnswer}
+                  isCorrect={isCurrentCorrect}
+                  tenseId={currentQ.tenseId}
+                  tenseName={tenseName}
+                  staticExplanation={currentQ.explanation}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Action button: Check Answer vs Next Question */}
+          {instantFeedback && !isCurrentChecked ? (
+            <button
+              disabled={!selectedOption}
+              onClick={handleCheckAnswer}
+              className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-black font-bold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2"
+            >
+              <span>Check Answer</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              disabled={!selectedOption}
+              onClick={handleNextQuestion}
+              className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-black font-bold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2"
+            >
+              <span>
+                {currentIndex < activeQuestions.length - 1
+                  ? 'Next Question'
+                  : user
+                    ? 'Submit & View Results'
+                    : 'Sign in with Google & Submit Test'}
+              </span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
     );
@@ -630,55 +779,70 @@ export const QuizRunner: React.FC = () => {
           </h3>
 
           <div className="space-y-3">
-            {lastResult.records.map((rec, rIdx) => (
-              <div
-                key={rIdx}
-                className={`p-4 rounded-2xl border transition-all ${
-                  rec.isCorrect
-                    ? 'bg-[#0D0D0D] border-zinc-800'
-                    : 'bg-rose-950/20 border-rose-900/50'
-                }`}
-              >
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <div className="flex items-center gap-2">
-                    {rec.isCorrect ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-rose-400 shrink-0" />
-                    )}
-                    <span className="text-xs font-semibold text-zinc-200">
-                      Q{rIdx + 1}: {rec.question.prompt}
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-mono text-zinc-500 shrink-0">
-                    {rec.question.tenseId}
-                  </span>
-                </div>
+            {lastResult.records.map((rec, rIdx) => {
+              const tenseName = TENSES_DATA.find((t) => t.id === rec.question.tenseId)?.name;
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs mb-2">
-                  <div className="p-2 rounded-xl bg-zinc-900 border border-zinc-800/80">
-                    <span className="text-[10px] font-mono text-zinc-500 block">Your Answer:</span>
-                    <span
-                      className={`font-semibold ${
-                        rec.isCorrect ? 'text-emerald-400' : 'text-rose-400'
-                      }`}
-                    >
-                      {rec.userAnswer || '(No answer)'}
+              return (
+                <div
+                  key={rIdx}
+                  className={`p-4 sm:p-5 rounded-2xl border transition-all ${
+                    rec.isCorrect
+                      ? 'bg-[#0D0D0D] border-zinc-800'
+                      : 'bg-rose-950/20 border-rose-900/50'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <div className="flex items-center gap-2">
+                      {rec.isCorrect ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      ) : (
+                        <XCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                      )}
+                      <span className="text-xs sm:text-sm font-semibold text-zinc-200">
+                        Q{rIdx + 1}: {rec.question.prompt}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono text-zinc-500 shrink-0">
+                      {tenseName || rec.question.tenseId}
                     </span>
                   </div>
-                  <div className="p-2 rounded-xl bg-zinc-900 border border-zinc-800/80">
-                    <span className="text-[10px] font-mono text-zinc-500 block">Correct Answer:</span>
-                    <span className="font-semibold text-zinc-200">
-                      {rec.question.correctAnswer}
-                    </span>
-                  </div>
-                </div>
 
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  <strong className="text-zinc-300">Why? </strong> {rec.question.explanation}
-                </p>
-              </div>
-            ))}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs mb-2">
+                    <div className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800/80">
+                      <span className="text-[10px] font-mono text-zinc-500 block">Your Answer:</span>
+                      <span
+                        className={`font-semibold ${
+                          rec.isCorrect ? 'text-emerald-400' : 'text-rose-400'
+                        }`}
+                      >
+                        {rec.userAnswer || '(No answer)'}
+                      </span>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800/80">
+                      <span className="text-[10px] font-mono text-zinc-500 block">Correct Answer:</span>
+                      <span className="font-semibold text-emerald-300">
+                        {rec.question.correctAnswer}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    <strong className="text-zinc-300">Standard Rule: </strong> {rec.question.explanation}
+                  </p>
+
+                  {/* Gemini AI Help Me Understand */}
+                  <HelpMeUnderstand
+                    prompt={rec.question.prompt}
+                    userAnswer={rec.userAnswer}
+                    correctAnswer={rec.question.correctAnswer}
+                    isCorrect={rec.isCorrect}
+                    tenseId={rec.question.tenseId}
+                    tenseName={tenseName}
+                    staticExplanation={rec.question.explanation}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
