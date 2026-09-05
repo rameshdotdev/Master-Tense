@@ -72,82 +72,346 @@ html.dark, :root.dark {
    Automatically adapts all components when dark mode is toggled off
    ============================================================ */
 html:not(.dark), html.light {
-  /* Surfaces & Backgrounds */
+  /* Main Canvas */
   .bg-\[\#0A0A0A\] {
     background-color: #F8FAFC !important;
   }
-  .bg-\[\#0D0D0D\] {
+
+  /* Primary Cards & Surfaces */
+  .bg-\[\#0D0D0D\],
+  .bg-\[\#121212\],
+  .bg-\[\#0E0E10\],
+  .bg-\[\#18181B\],
+  .bg-\[\#14121E\],
+  .bg-\[\#0D0B14\],
+  .bg-\[\#111111\],
+  .bg-zinc-950 {
     background-color: #FFFFFF !important;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+    border-color: #E2E8F0 !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
   }
-  .bg-\[\#0D0D0D\]\/95 {
+
+  /* Semi-transparent Surfaces / Navbars / Modals */
+  .bg-\[\#0D0D0D\]\/95,
+  .bg-\[\#121212\]\/95,
+  .bg-\[\#18181B\]\/95,
+  .bg-\[\#0D0D0D\]\/90 {
     background-color: rgba(255, 255, 255, 0.95) !important;
+    border-color: #E2E8F0 !important;
   }
-  .bg-\[\#121212\] {
-    background-color: #FFFFFF !important;
-  }
-  .bg-\[\#121212\]\/95 {
-    background-color: rgba(255, 255, 255, 0.95) !important;
-  }
-  .bg-zinc-900 {
-    background-color: #F1F5F9 !important;
-  }
-  .bg-zinc-900\/50, .bg-zinc-900\/60, .bg-zinc-900\/80 {
+
+  /* Secondary Containers / Option Rows / Inner Panels / Form Fields */
+  .bg-zinc-900,
+  .bg-zinc-900\/90,
+  .bg-zinc-900\/80,
+  .bg-zinc-900\/70,
+  .bg-zinc-900\/60,
+  .bg-zinc-900\/50,
+  .bg-zinc-900\/40,
+  .bg-zinc-900\/30,
+  .bg-zinc-900\/20,
+  .bg-zinc-900\/10 {
     background-color: #F8FAFC !important;
+    border-color: #E2E8F0 !important;
   }
-  .bg-zinc-800, .bg-zinc-800\/90, .bg-zinc-800\/80, .bg-zinc-800\/60, .bg-zinc-800\/50 {
+
+  /* Chips, Badges, Buttons, Inner Wells, Word Bank Tiles */
+  .bg-zinc-800,
+  .bg-zinc-800\/90,
+  .bg-zinc-800\/80,
+  .bg-zinc-800\/70,
+  .bg-zinc-800\/60,
+  .bg-zinc-800\/50,
+  .bg-zinc-800\/40,
+  .bg-zinc-800\/30,
+  .bg-zinc-800\/20,
+  .bg-zinc-700,
+  .bg-zinc-600 {
+    background-color: #F1F5F9 !important;
+    border-color: #E2E8F0 !important;
+    color: #334155 !important;
+  }
+
+  /* Nested wells inside secondary panels */
+  .bg-zinc-900 .bg-zinc-800,
+  .bg-zinc-900\/60 .bg-zinc-800,
+  .bg-\[\#0D0D0D\] .bg-zinc-900,
+  .bg-\[\#121212\] .bg-zinc-900 {
     background-color: #F1F5F9 !important;
   }
 
-  /* Borders */
-  .border-zinc-800, .border-zinc-700 {
+  /* ------------------------------------------------------------
+     COLOR-TINTED STATUS BOXES & BADGES
+     Replaces dark muddy blotches with crisp, elegant light tints
+     ------------------------------------------------------------ */
+
+  /* Emerald (Success / Mastered / Present) */
+  .bg-emerald-950\/60,
+  .bg-emerald-950\/50,
+  .bg-emerald-950\/40,
+  .bg-emerald-950\/30,
+  .bg-emerald-950\/25,
+  .bg-emerald-950\/20,
+  .bg-emerald-950\/10,
+  .bg-emerald-900\/60,
+  .bg-emerald-950 {
+    background-color: #ECFDF5 !important;
+    border-color: #A7F3D0 !important;
+    color: #065F46 !important;
+  }
+  .bg-emerald-950\/40 .text-emerald-400,
+  .bg-emerald-950\/40 .text-emerald-300,
+  .bg-emerald-950\/30 .text-emerald-400,
+  .bg-emerald-950\/30 .text-emerald-300,
+  .bg-emerald-950\/20 .text-emerald-400 {
+    color: #047857 !important;
+  }
+
+  /* Rose (Error / Needs Review / Unresolved Mistakes) */
+  .bg-rose-950\/60,
+  .bg-rose-950\/50,
+  .bg-rose-950\/40,
+  .bg-rose-950\/30,
+  .bg-rose-950\/25,
+  .bg-rose-950\/20,
+  .bg-rose-950\/10,
+  .bg-rose-900\/60,
+  .bg-rose-950 {
+    background-color: #FFF1F2 !important;
+    border-color: #FECDD3 !important;
+    color: #9F1239 !important;
+  }
+  .bg-rose-950\/40 .text-rose-400,
+  .bg-rose-950\/40 .text-rose-300,
+  .bg-rose-950\/30 .text-rose-400,
+  .bg-rose-950\/30 .text-rose-300,
+  .bg-rose-950\/20 .text-rose-400 {
+    color: #BE123C !important;
+  }
+
+  /* Amber (Warning / Hints / Streaks / Past) */
+  .bg-amber-950\/60,
+  .bg-amber-950\/50,
+  .bg-amber-950\/40,
+  .bg-amber-950\/30,
+  .bg-amber-950\/25,
+  .bg-amber-950\/20,
+  .bg-amber-950\/10,
+  .bg-amber-900\/60,
+  .bg-amber-950 {
+    background-color: #FFFBEB !important;
+    border-color: #FDE68A !important;
+    color: #92400E !important;
+  }
+  .bg-amber-950\/40 .text-amber-400,
+  .bg-amber-950\/40 .text-amber-300,
+  .bg-amber-950\/30 .text-amber-400,
+  .bg-amber-950\/30 .text-amber-300,
+  .bg-amber-950\/20 .text-amber-400 {
+    color: #B45309 !important;
+  }
+
+  /* Purple / Indigo (AI Explanations / Insights) */
+  .bg-purple-950\/60,
+  .bg-purple-950\/50,
+  .bg-purple-950\/40,
+  .bg-purple-950\/30,
+  .bg-purple-950\/20,
+  .bg-purple-950\/10,
+  .bg-purple-900\/60,
+  .bg-purple-950,
+  .bg-indigo-950\/30 {
+    background-color: #FAF5FF !important;
+    border-color: #E9D5FF !important;
+    color: #6B21A8 !important;
+  }
+  .bg-purple-950\/40 .text-purple-400,
+  .bg-purple-950\/40 .text-purple-300,
+  .bg-purple-950\/30 .text-purple-400,
+  .bg-purple-950\/30 .text-purple-300 {
+    color: #7E22CE !important;
+  }
+
+  /* Teal (Future Tenses / Fluency) */
+  .bg-teal-950\/60,
+  .bg-teal-950\/50,
+  .bg-teal-950\/40,
+  .bg-teal-950\/30,
+  .bg-teal-950\/20,
+  .bg-teal-950\/10,
+  .bg-teal-900\/60,
+  .bg-teal-950 {
+    background-color: #F0FDFA !important;
+    border-color: #99F6E4 !important;
+    color: #115E59 !important;
+  }
+  .bg-teal-950\/40 .text-teal-400,
+  .bg-teal-950\/40 .text-teal-300,
+  .bg-teal-950\/30 .text-teal-400,
+  .bg-teal-950\/30 .text-teal-300 {
+    color: #0F766E !important;
+  }
+
+  /* Sky / Blue */
+  .bg-sky-950\/40,
+  .bg-sky-950\/30,
+  .bg-sky-950\/20,
+  .bg-sky-950\/10,
+  .bg-sky-950 {
+    background-color: #F0F9FF !important;
+    border-color: #BAE6FD !important;
+    color: #075985 !important;
+  }
+
+  /* Orange */
+  .bg-orange-950\/40,
+  .bg-orange-950\/30,
+  .bg-orange-950\/20,
+  .bg-orange-950 {
+    background-color: #FFF7ED !important;
+    border-color: #FED7AA !important;
+    color: #9A3412 !important;
+  }
+
+  /* ------------------------------------------------------------
+     GRADIENTS & SPECIAL BANNERS
+     ------------------------------------------------------------ */
+  .from-purple-950\/30 {
+    --tw-gradient-from: #FAF5FF !important;
+    --tw-gradient-to: rgb(250 245 255 / 0) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+  }
+  .to-indigo-950\/30 {
+    --tw-gradient-to: #EEF2FF !important;
+  }
+  .hover\:from-purple-950\/50:hover {
+    --tw-gradient-from: #F3E8FF !important;
+  }
+  .hover\:to-indigo-950\/50:hover {
+    --tw-gradient-to: #E0E7FF !important;
+  }
+
+  /* ------------------------------------------------------------
+     BORDERS & DIVIDERS
+     ------------------------------------------------------------ */
+  .border-zinc-800,
+  .border-zinc-700,
+  .border-zinc-900,
+  .border-zinc-800\/80,
+  .border-zinc-800\/60,
+  .border-zinc-800\/50,
+  .border-zinc-800\/40,
+  .border-zinc-700\/80 {
     border-color: #E2E8F0 !important;
   }
-  .border-zinc-800\/80, .border-zinc-800\/60 {
-    border-color: #F1F5F9 !important;
+
+  .border-\[\#121212\],
+  .border-\[\#0D0D0D\] {
+    border-color: #FFFFFF !important;
   }
+
   .divide-zinc-800 > :not([hidden]) ~ :not([hidden]),
+  .divide-zinc-800\/80 > :not([hidden]) ~ :not([hidden]),
   .divide-zinc-800\/60 > :not([hidden]) ~ :not([hidden]) {
     border-color: #E2E8F0 !important;
   }
 
-  /* Typography */
-  .text-white:not(.bg-emerald-500):not(.bg-rose-500):not(.bg-amber-500):not(.bg-teal-500):not(.bg-blue-500) {
-    color: #0F172A !important;
+  .border-rose-900\/50,
+  .border-rose-900\/60,
+  .border-rose-900\/40 {
+    border-color: #FECDD3 !important;
   }
-  .text-zinc-200, .text-zinc-300 {
-    color: #334155 !important;
+
+  .border-amber-900\/50,
+  .border-amber-900\/60 {
+    border-color: #FDE68A !important;
   }
-  .text-zinc-400 {
-    color: #64748B !important;
+
+  .border-emerald-900\/50,
+  .border-emerald-900\/60 {
+    border-color: #A7F3D0 !important;
   }
-  .text-zinc-500 {
-    color: #94A3B8 !important;
+
+  .border-purple-800\/40,
+  .border-purple-500\/40,
+  .border-purple-500\/30,
+  .border-purple-500\/20 {
+    border-color: #E9D5FF !important;
   }
-  input, textarea, select {
+
+  /* ------------------------------------------------------------
+     TYPOGRAPHY & READABILITY
+     ------------------------------------------------------------ */
+  .text-white:not(.bg-emerald-500):not(.bg-rose-500):not(.bg-amber-500):not(.bg-teal-500):not(.bg-blue-500):not(.bg-emerald-600):not(.bg-rose-600):not(.bg-amber-600):not(.bg-purple-600) {
     color: #0F172A !important;
   }
 
-  /* Interactive States */
-  .hover\:bg-zinc-800:hover {
+  .text-zinc-200,
+  .text-zinc-300 {
+    color: #334155 !important;
+  }
+
+  .text-zinc-400 {
+    color: #64748B !important;
+  }
+
+  .text-zinc-500 {
+    color: #64748B !important;
+  }
+
+  /* Inputs, selects, and textareas */
+  input, textarea, select {
+    background-color: #FFFFFF !important;
+    border-color: #CBD5E1 !important;
+    color: #0F172A !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #94A3B8 !important;
+  }
+
+  /* ------------------------------------------------------------
+     INTERACTIVE & HOVER STATES
+     ------------------------------------------------------------ */
+  .hover\:bg-zinc-800:hover,
+  .hover\:bg-zinc-900:hover,
+  .hover\:bg-zinc-900\/40:hover,
+  .hover\:bg-zinc-900\/60:hover,
+  .hover\:bg-zinc-900\/80:hover,
+  .hover\:bg-zinc-800\/50:hover,
+  .hover\:bg-zinc-800\/60:hover,
+  .hover\:bg-zinc-800\/80:hover {
     background-color: #E2E8F0 !important;
   }
+
   .hover\:bg-zinc-700:hover {
     background-color: #CBD5E1 !important;
   }
-  .hover\:bg-zinc-800\/50:hover, .hover\:bg-zinc-800\/80:hover {
-    background-color: #F1F5F9 !important;
+
+  .hover\:border-zinc-700:hover,
+  .hover\:border-zinc-600:hover {
+    border-color: #CBD5E1 !important;
   }
+
   .hover\:text-white:hover {
     color: #0F172A !important;
   }
-  .hover\:text-zinc-200:hover, .hover\:text-zinc-300:hover {
+
+  .hover\:text-zinc-200:hover,
+  .hover\:text-zinc-300:hover {
     color: #0F172A !important;
   }
 
   /* Modals backdrop */
-  .bg-black\/80 {
-    background-color: rgba(15, 23, 42, 0.5) !important;
+  .bg-black\/80,
+  .bg-black\/70 {
+    background-color: rgba(15, 23, 42, 0.45) !important;
+  }
+
+  /* Timeline bar horizon */
+  .h-1\.5.w-full.bg-zinc-800 {
+    background-color: #CBD5E1 !important;
   }
 
   /* Scrollbar */

@@ -67,17 +67,17 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenDaily }) => {
 
             <button
               onClick={() => navigate('/quiz')}
-              className="w-full sm:w-auto min-h-[46px] px-6 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-emerald-500 text-zinc-200 font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+              className="w-full sm:w-auto min-h-[46px] px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-slate-300 dark:border-zinc-700 hover:border-emerald-500 dark:hover:border-emerald-500 text-slate-800 dark:text-zinc-200 font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-xs"
             >
-              <HelpCircle className="w-4 h-4 text-emerald-400" />
+              <HelpCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               <span>Take a Quick Test</span>
             </button>
 
             <button
               onClick={() => navigate('/cheatsheet')}
-              className="w-full sm:w-auto min-h-[46px] px-6 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-300 font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+              className="w-full sm:w-auto min-h-[46px] px-6 py-3 rounded-xl bg-white hover:bg-slate-50 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-slate-300 dark:border-zinc-800 hover:border-slate-400 dark:hover:border-zinc-700 text-slate-700 dark:text-zinc-300 font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-xs"
             >
-              <Table className="w-4 h-4 text-zinc-400" />
+              <Table className="w-4 h-4 text-slate-500 dark:text-zinc-400" />
               <span>Tense Cheat Sheet</span>
             </button>
           </div>
@@ -87,16 +87,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenDaily }) => {
             {/* Daily Streak */}
             <div
               onClick={onOpenDaily}
-              className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 hover:border-orange-500/40 shadow-sm flex items-center gap-3 cursor-pointer transition-colors"
+              className="p-4 rounded-2xl bg-white dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 hover:border-orange-500/40 shadow-xs flex items-center gap-3 cursor-pointer transition-colors"
             >
-              <div className="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 text-orange-400 flex items-center justify-center shrink-0">
-                <Flame className="w-5 h-5 fill-orange-400" />
+              <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-zinc-800 border border-orange-200 dark:border-zinc-700 text-orange-500 dark:text-orange-400 flex items-center justify-center shrink-0">
+                <Flame className="w-5 h-5 fill-orange-500 dark:fill-orange-400" />
               </div>
               <div className="text-left">
-                <span className="text-xs font-bold text-white block">
+                <span className="text-xs font-bold text-slate-900 dark:text-white block">
                   {stats.streakDays} Day Streak
                 </span>
-                <span className="text-[11px] text-orange-400 font-medium">
+                <span className="text-[11px] text-orange-600 dark:text-orange-400 font-medium">
                   {isDailyDone ? 'Daily Challenge Complete ✓' : 'Daily Challenge Ready 🔥'}
                 </span>
               </div>
@@ -105,16 +105,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenDaily }) => {
             {/* Mastered Counter */}
             <div
               onClick={() => navigate('/progress')}
-              className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 hover:border-emerald-500/40 shadow-sm flex items-center gap-3 cursor-pointer transition-colors"
+              className="p-4 rounded-2xl bg-white dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 hover:border-emerald-500/40 shadow-xs flex items-center gap-3 cursor-pointer transition-colors"
             >
-              <div className="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 text-emerald-400 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-zinc-800 border border-emerald-200 dark:border-zinc-700 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
               <div className="text-left">
-                <span className="text-xs font-bold text-white block">
+                <span className="text-xs font-bold text-slate-900 dark:text-white block">
                   {masteredCount} / 12 Mastered
                 </span>
-                <span className="text-[11px] text-zinc-400 font-medium">
+                <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-medium">
                   {Math.round((masteredCount / 12) * 100)}% Curriculum Completed
                 </span>
               </div>
@@ -123,16 +123,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenDaily }) => {
             {/* Interactive Flashcards / Compare shortcut */}
             <div
               onClick={() => navigate('/compare')}
-              className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 hover:border-emerald-500/40 shadow-sm flex items-center gap-3 cursor-pointer transition-colors"
+              className="p-4 rounded-2xl bg-white dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 hover:border-emerald-500/40 shadow-xs flex items-center gap-3 cursor-pointer transition-colors"
             >
-              <div className="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 text-emerald-400 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                 <GitCompare className="w-5 h-5" />
               </div>
               <div className="text-left">
-                <span className="text-xs font-bold text-white block">
+                <span className="text-xs font-bold text-slate-900 dark:text-white block">
                   Compare Tenses
                 </span>
-                <span className="text-[11px] text-zinc-400 font-medium">
+                <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-medium">
                   Side-by-side contrast tool
                 </span>
               </div>
@@ -228,12 +228,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenDaily }) => {
         </section>
 
         {/* Learning Tools Quick Grid */}
-        <section className="bg-zinc-900/40 rounded-3xl border border-zinc-800 p-6 sm:p-8 space-y-6">
+        <section className="bg-slate-50 dark:bg-zinc-900/40 rounded-3xl border border-slate-200 dark:border-zinc-800 p-6 sm:p-8 space-y-6">
           <div className="text-center max-w-xl mx-auto space-y-1">
-            <h3 className="text-xl font-serif italic text-white">
+            <h3 className="text-xl font-serif italic text-slate-900 dark:text-white">
               Reinforce & Retain Your Knowledge
             </h3>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-slate-500 dark:text-zinc-400">
               Go beyond reading rules with our interactive retention toolset.
             </p>
           </div>
@@ -241,52 +241,52 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenDaily }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div
               onClick={() => navigate('/practice')}
-              className="bg-[#121212] p-4 rounded-2xl border border-zinc-800 hover:border-emerald-500/50 shadow-sm cursor-pointer transition-colors group"
+              className="bg-white dark:bg-[#121212] p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 hover:border-emerald-500/50 shadow-xs cursor-pointer transition-colors group"
             >
-              <div className="w-9 h-9 rounded-xl bg-zinc-800 border border-zinc-700 text-emerald-400 flex items-center justify-center mb-3">
+              <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-zinc-800 border border-emerald-200 dark:border-zinc-700 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-sm text-zinc-200 group-hover:text-emerald-400 transition-colors">
+              <h4 className="font-bold text-sm text-slate-800 dark:text-zinc-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                 Interactive Practice
               </h4>
-              <p className="text-xs text-zinc-400 mt-1">
+              <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
                 6 question types including sentence correction and word rearranging.
               </p>
             </div>
 
             <div
               onClick={() => navigate('/flashcards')}
-              className="bg-[#121212] p-4 rounded-2xl border border-zinc-800 hover:border-emerald-500/50 shadow-sm cursor-pointer transition-colors group"
+              className="bg-white dark:bg-[#121212] p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 hover:border-emerald-500/50 shadow-xs cursor-pointer transition-colors group"
             >
-              <div className="w-9 h-9 rounded-xl bg-zinc-800 border border-zinc-700 text-emerald-400 flex items-center justify-center mb-3">
+              <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-zinc-800 border border-purple-200 dark:border-zinc-700 text-purple-600 dark:text-emerald-400 flex items-center justify-center mb-3">
                 <Layers className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-sm text-zinc-200 group-hover:text-emerald-400 transition-colors">
+              <h4 className="font-bold text-sm text-slate-800 dark:text-zinc-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                 3D Flashcards
               </h4>
-              <p className="text-xs text-zinc-400 mt-1">
+              <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
                 Flip cards to test recall of formulas, signal words, and rules.
               </p>
             </div>
 
             <div
               onClick={() => navigate('/compare')}
-              className="bg-[#121212] p-4 rounded-2xl border border-zinc-800 hover:border-emerald-500/50 shadow-sm cursor-pointer transition-colors group"
+              className="bg-white dark:bg-[#121212] p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 hover:border-emerald-500/50 shadow-xs cursor-pointer transition-colors group"
             >
-              <div className="w-9 h-9 rounded-xl bg-zinc-800 border border-zinc-700 text-emerald-400 flex items-center justify-center mb-3">
+              <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-zinc-800 border border-blue-200 dark:border-zinc-700 text-blue-600 dark:text-emerald-400 flex items-center justify-center mb-3">
                 <GitCompare className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-sm text-zinc-200 group-hover:text-emerald-400 transition-colors">
+              <h4 className="font-bold text-sm text-slate-800 dark:text-zinc-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                 Tense Comparison
               </h4>
-              <p className="text-xs text-zinc-400 mt-1">
+              <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
                 Side-by-side breakdowns of confusing pairs like Past Simple vs Present Perfect.
               </p>
             </div>
 
             <div
               onClick={() => navigate('/mistakes')}
-              className="bg-[#121212] p-4 rounded-2xl border border-zinc-800 hover:border-emerald-500/50 shadow-sm cursor-pointer transition-colors group"
+              className="bg-white dark:bg-[#121212] p-4 rounded-2xl border border-slate-200 dark:border-zinc-800 hover:border-emerald-500/50 shadow-xs cursor-pointer transition-colors group"
             >
               <div className="w-9 h-9 rounded-xl bg-zinc-800 border border-zinc-700 text-orange-400 flex items-center justify-center mb-3">
                 <Flame className="w-5 h-5" />

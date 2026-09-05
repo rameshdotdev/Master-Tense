@@ -89,40 +89,40 @@ export const HelpMeUnderstand: React.FC<HelpMeUnderstandProps> = ({
         disabled={isLoading}
         className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shadow-sm ${
           isOpen
-            ? 'bg-purple-950/40 border border-purple-500/40 text-purple-300'
-            : 'bg-gradient-to-r from-purple-950/30 to-indigo-950/30 hover:from-purple-950/50 hover:to-indigo-950/50 border border-purple-500/30 hover:border-purple-400 text-purple-200'
+            ? 'bg-purple-100 text-purple-800 border border-purple-300 dark:bg-purple-950/40 dark:border-purple-500/40 dark:text-purple-300'
+            : 'bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 hover:border-purple-300 dark:bg-gradient-to-r dark:from-purple-950/30 dark:to-indigo-950/30 dark:hover:from-purple-950/50 dark:hover:to-indigo-950/50 dark:border-purple-500/30 dark:hover:border-purple-400 dark:text-purple-200'
         }`}
       >
         {isLoading ? (
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-400 shrink-0" />
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-600 dark:text-purple-400 shrink-0" />
         ) : (
-          <Sparkles className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+          <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
         )}
         <span>{isLoading ? 'Gemini is analyzing...' : 'Help me understand'}</span>
         {isOpen ? (
-          <ChevronUp className="w-3 h-3 text-purple-400 shrink-0" />
+          <ChevronUp className="w-3 h-3 text-purple-600 dark:text-purple-400 shrink-0" />
         ) : (
-          <ChevronDown className="w-3 h-3 text-purple-400 shrink-0" />
+          <ChevronDown className="w-3 h-3 text-purple-600 dark:text-purple-400 shrink-0" />
         )}
       </button>
 
       {/* Expanded Explanation Card */}
       {isOpen && (
-        <div className="mt-3 p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-[#14121E] to-[#0D0B14] border border-purple-500/30 shadow-lg space-y-4 animate-in fade-in duration-200">
+        <div className="mt-3 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0D0D0D] border border-purple-200 dark:border-purple-500/30 shadow-lg space-y-4 animate-in fade-in duration-200">
           {/* Header */}
-          <div className="flex items-center justify-between gap-2 border-b border-purple-500/20 pb-3">
+          <div className="flex items-center justify-between gap-2 border-b border-purple-200/80 dark:border-purple-500/20 pb-3">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-300">
+              <div className="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-500/20 border border-purple-200 dark:border-purple-500/40 flex items-center justify-center text-purple-700 dark:text-purple-300">
                 <Sparkles className="w-3.5 h-3.5" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-white tracking-wide flex items-center gap-2">
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white tracking-wide flex items-center gap-2">
                   <span>Grammatical Reasoning</span>
-                  <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/25 text-purple-300">
+                  <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/25 text-purple-800 dark:text-purple-300">
                     Gemini AI
                   </span>
                 </h4>
-                <p className="text-[11px] text-zinc-400 font-mono mt-0.5">
+                <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-mono mt-0.5">
                   Target: {tenseName || tenseId.replace(/-/g, ' ')}
                 </p>
               </div>
@@ -134,7 +134,7 @@ export const HelpMeUnderstand: React.FC<HelpMeUnderstandProps> = ({
                 onClick={handleRefresh}
                 disabled={isLoading}
                 title="Regenerate explanation"
-                className="p-1.5 rounded-lg border border-purple-500/20 text-purple-400 hover:text-purple-200 hover:bg-purple-950/40 transition-colors"
+                className="p-1.5 rounded-lg border border-purple-200 dark:border-purple-500/20 text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition-colors"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
               </button>
@@ -144,27 +144,27 @@ export const HelpMeUnderstand: React.FC<HelpMeUnderstandProps> = ({
           {/* Loading Skeleton */}
           {isLoading && !data && (
             <div className="space-y-3 py-2">
-              <div className="flex items-center gap-2 text-xs text-purple-300 font-mono">
-                <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
+              <div className="flex items-center gap-2 text-xs text-purple-700 dark:text-purple-300 font-mono">
+                <Loader2 className="w-4 h-4 animate-spin text-purple-600 dark:text-purple-400" />
                 <span>Evaluating grammatical aspect, time signals, and syntax...</span>
               </div>
               <div className="space-y-2">
-                <div className="h-3 bg-purple-950/40 rounded-full w-3/4 animate-pulse" />
-                <div className="h-3 bg-purple-950/40 rounded-full w-full animate-pulse" />
-                <div className="h-3 bg-purple-950/40 rounded-full w-5/6 animate-pulse" />
+                <div className="h-3 bg-purple-100 dark:bg-purple-950/40 rounded-full w-3/4 animate-pulse" />
+                <div className="h-3 bg-purple-100 dark:bg-purple-950/40 rounded-full w-full animate-pulse" />
+                <div className="h-3 bg-purple-100 dark:bg-purple-950/40 rounded-full w-5/6 animate-pulse" />
               </div>
             </div>
           )}
 
           {/* Error View */}
           {error && !isLoading && (
-            <div className="p-3 rounded-xl bg-rose-950/30 border border-rose-500/30 flex items-start gap-2.5 text-xs text-rose-300">
-              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-500/30 flex items-start gap-2.5 text-xs text-rose-800 dark:text-rose-300">
+              <AlertCircle className="w-4 h-4 text-rose-500 dark:text-rose-400 shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold">{error}</p>
                 <button
                   onClick={fetchExplanation}
-                  className="mt-1.5 text-xs text-rose-200 underline hover:text-white"
+                  className="mt-1.5 text-xs text-rose-700 dark:text-rose-200 underline hover:text-rose-900 dark:hover:text-white"
                 >
                   Retry analysis
                 </button>
@@ -179,39 +179,39 @@ export const HelpMeUnderstand: React.FC<HelpMeUnderstandProps> = ({
               <div
                 className={`p-3 rounded-xl border flex items-start gap-2.5 ${
                   isCorrect
-                    ? 'bg-emerald-950/30 border-emerald-500/30 text-emerald-200'
-                    : 'bg-rose-950/30 border-rose-500/30 text-rose-200'
+                    ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-200'
+                    : 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-500/30 text-rose-800 dark:text-rose-200'
                 }`}
               >
                 {isCorrect ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                 ) : (
-                  <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                  <XCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
                 )}
                 <div>
                   <span className="font-bold text-[11px] uppercase tracking-wider block font-mono">
                     {isCorrect ? 'Correct Grammatical Selection' : 'Incorrect Choice Identified'}
                   </span>
-                  <p className="mt-0.5 text-zinc-300 leading-relaxed">{data.verdict}</p>
+                  <p className="mt-0.5 text-slate-700 dark:text-zinc-300 leading-relaxed">{data.verdict}</p>
                 </div>
               </div>
 
               {/* Deep Grammatical Reasoning */}
               <div className="space-y-1.5">
-                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-purple-300 block">
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300 block">
                   Grammar &amp; Timeline Breakdown:
                 </span>
-                <p className="text-zinc-300 leading-relaxed whitespace-pre-line text-xs sm:text-[13px]">
+                <p className="text-slate-700 dark:text-zinc-300 leading-relaxed whitespace-pre-line text-xs sm:text-[13px]">
                   {data.grammaticalReasoning}
                 </p>
               </div>
 
               {/* Why User Answer Worked or Failed */}
-              <div className="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 space-y-1">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block">
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900/80 border border-slate-200 dark:border-zinc-800 space-y-1">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block">
                   {isCorrect ? 'Why your choice is accurate:' : 'Why your chosen answer failed:'}
                 </span>
-                <p className="text-zinc-200 leading-relaxed">
+                <p className="text-slate-800 dark:text-zinc-200 leading-relaxed">
                   {data.whyUserAnswerWorkedOrFailed}
                 </p>
               </div>
@@ -219,16 +219,16 @@ export const HelpMeUnderstand: React.FC<HelpMeUnderstandProps> = ({
               {/* Signal Clues in Sentence */}
               {data.signalClues && data.signalClues.length > 0 && (
                 <div className="space-y-1.5">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 block">
                     Context &amp; Time Clues in the Sentence:
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {data.signalClues.map((clue, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-950/40 border border-purple-500/20 text-purple-300 text-[11px] font-mono"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-500/20 text-purple-800 dark:text-purple-300 text-[11px] font-mono"
                       >
-                        <Tag className="w-3 h-3 text-purple-400" />
+                        <Tag className="w-3 h-3 text-purple-600 dark:text-purple-400" />
                         <span>{clue}</span>
                       </span>
                     ))}
@@ -238,13 +238,13 @@ export const HelpMeUnderstand: React.FC<HelpMeUnderstandProps> = ({
 
               {/* Memory Tip */}
               {data.memoryTip && (
-                <div className="p-3.5 rounded-xl bg-amber-950/25 border border-amber-500/30 flex items-start gap-2.5 text-amber-200">
-                  <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/25 border border-amber-200 dark:border-amber-500/30 flex items-start gap-2.5 text-amber-800 dark:text-amber-200">
+                  <Lightbulb className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-mono font-bold text-[10px] uppercase tracking-wider text-amber-400 block">
+                    <span className="font-mono font-bold text-[10px] uppercase tracking-wider text-amber-800 dark:text-amber-400 block">
                       Memory Rule of Thumb
                     </span>
-                    <p className="mt-0.5 text-zinc-300 text-xs leading-relaxed">
+                    <p className="mt-0.5 text-slate-700 dark:text-zinc-300 text-xs leading-relaxed">
                       {data.memoryTip}
                     </p>
                   </div>
