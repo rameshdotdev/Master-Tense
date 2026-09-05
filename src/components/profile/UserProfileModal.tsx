@@ -13,8 +13,15 @@ import {
   Loader2,
   AlertCircle,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  ExternalLink,
+  Copy,
+  Edit3,
+  Save,
+  ShieldAlert,
+  Info
 } from 'lucide-react';
+import { getAuthDiagnostics } from '../../lib/firebase';
 
 interface UserProfileModalProps {
   isOpen: boolean;
@@ -33,14 +40,22 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
     signOut,
     isSyncing,
     lastSyncedAt,
-    isDark
+    isDark,
+    guestName,
+    updateGuestName
   } = useApp();
 
   const [signingIn, setSigningIn] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [copiedDomain, setCopiedDomain] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState(guestName || 'Ramesh');
 
   if (!isOpen) return null;
+
+  const authDiag = getAuthDiagnostics();
+  const isInIframe = typeof window !== 'undefined' && window.self !== window.top;
 
   const currentLevelXp = (stats.level - 1) * 150;
   const nextLevelXp = stats.level * 150;
@@ -87,17 +102,48 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
     }
   };
 
-  const displayName = user?.displayName || 'Learner';
-  const email = user?.email || 'Guest Mode';
+  const handleCopyDomain = async () => {
+    try {
+      await navigator.clipboard.writeText(authDiag.hostname);
+      setCopiedDomain(true);
+      setTimeout(() => setCopiedDomain(false), 2500);
+    } catch {
+      // Fallback
+      setCopiedDomain(true);
+      setTimeout(() => setCopiedDomain(false), 2500);
+    }
+  };
+
+  const handleOpenInNewTab = () => {
+    window.open(window.location.href, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleSaveName = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (nameInput.trim()) {
+      updateGuestName(nameInput.trim());
+      setIsEditingName(false);
+    }
+  };
+
+  const displayName = user?.displayName || guestName || 'Ramesh';
+  const email = user?.email || 'Active Local Profile';
   const photoURL = user?.photoURL;
   const initials = displayName
     .split(' ')
     .map((n) => n[0])
     .join('')
     .substring(0, 2)
-    .toUpperCase() || 'U';
+    .toUpperCase() || 'R';
 
   const displayedError = localError || authError;
+  const isDomainError =
+    displayedError &&
+    (displayedError.includes('unauthorized-domain') ||
+      displayedError.includes('not authorized') ||
+      displayedError.includes('Authorized domains'));
+  const isPopupBlocked =
+    displayedError && (displayedError.includes('popup') || displayedError.includes('blocked'));
 
   return (
     <div
@@ -144,26 +190,138 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
 
         {/* Profile Content */}
         <div className="p-4 sm:p-6 space-y-5">
-          {/* Error Banner if any */}
+          {/* Error Banner & Dedicated Firebase Domain Assistant */}
           {displayedError && (
-            <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-start gap-2.5 text-xs text-rose-400">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
-              <div className="flex-1">
-                <p className="font-semibold">{displayedError}</p>
-                <button
-                  onClick={() => {
-                    setLocalError(null);
-                    clearAuthError();
-                  }}
-                  className="mt-1 text-[11px] underline hover:text-rose-300"
-                >
-                  Dismiss
-                </button>
+            <div className="space-y-3">
+              <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-start gap-2.5 text-xs text-rose-400">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold">{displayedError}</p>
+                  <button
+                    onClick={() => {
+                      setLocalError(null);
+                      clearAuthError();
+                    }}
+                    className="mt-1.5 text-[11px] font-mono underline hover:text-rose-300 block"
+                  >
+                    Dismiss notification
+                  </button>
+                </div>
               </div>
+
+              {/* Specific Guided Solution for Firebase Unauthorized Domain */}
+              {isDomainError && (
+                <div
+                  className={`p-4 rounded-2xl border text-xs space-y-3 animate-in fade-in duration-200 ${
+                    isDark
+                      ? 'bg-amber-950/20 border-amber-500/30 text-amber-200'
+                      : 'bg-amber-50 border-amber-200 text-amber-900'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 font-bold text-sm text-amber-500">
+                    <ShieldAlert className="w-4 h-4" />
+                    <span>Authorize this Domain in Firebase Console</span>
+                  </div>
+                  <p className="leading-relaxed opacity-90">
+                    Firebase blocks OAuth popups until the hosting domain is added to your project's
+                    authorized domains list.
+                  </p>
+
+                  <div className="space-y-1.5">
+                    <span className="text-[11px] font-mono font-bold opacity-80">
+                      Current App Domain to Authorize:
+                    </span>
+                    <div
+                      className={`flex items-center gap-2 p-2 rounded-xl border font-mono text-[11px] break-all ${
+                        isDark
+                          ? 'bg-zinc-950/80 border-amber-500/30 text-emerald-400'
+                          : 'bg-white border-amber-300 text-emerald-700'
+                      }`}
+                    >
+                      <span className="flex-1 select-all">{authDiag.hostname}</span>
+                      <button
+                        onClick={handleCopyDomain}
+                        className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-semibold text-[11px] flex items-center gap-1 shrink-0 transition-colors"
+                      >
+                        {copiedDomain ? (
+                          <>
+                            <Check className="w-3 h-3" />
+                            <span>Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3 h-3" />
+                            <span>Copy</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Action Link Buttons */}
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <a
+                      href={authDiag.consoleSettingsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors shadow-xs"
+                    >
+                      <span>Open Firebase Console</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+
+                    <button
+                      onClick={handleOpenInNewTab}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border font-semibold text-xs transition-colors ${
+                        isDark
+                          ? 'border-zinc-700 hover:bg-zinc-800 text-zinc-200'
+                          : 'border-slate-300 hover:bg-slate-100 text-slate-800'
+                      }`}
+                    >
+                      <span>Open App in New Tab</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </button>
+                  </div>
+
+                  {/* 3 Step Guide */}
+                  <ol className="list-decimal list-inside space-y-1 text-[11px] opacity-80 pt-1 font-mono">
+                    <li>Click <strong>Copy</strong> above to copy this app domain.</li>
+                    <li>Click <strong>Open Firebase Console</strong> and scroll to <em>Authorized domains</em>.</li>
+                    <li>Click <em>Add domain</em>, paste the copied domain, and click <strong>Save</strong>.</li>
+                  </ol>
+                </div>
+              )}
+
+              {/* Specific Solution for Popup Blocked in Iframe */}
+              {isPopupBlocked && (
+                <div
+                  className={`p-4 rounded-2xl border text-xs space-y-2.5 ${
+                    isDark
+                      ? 'bg-sky-950/20 border-sky-500/30 text-sky-200'
+                      : 'bg-sky-50 border-sky-200 text-sky-900'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 font-bold text-sm text-sky-400">
+                    <Info className="w-4 h-4" />
+                    <span>Popup Blocked by Browser or Iframe</span>
+                  </div>
+                  <p className="leading-relaxed opacity-90">
+                    Your browser has restricted opening new popups from the embedded preview window.
+                    Opening the app in a standalone tab allows Google sign-in to open directly.
+                  </p>
+                  <button
+                    onClick={handleOpenInNewTab}
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs transition-colors shadow-xs"
+                  >
+                    <span>Open in Standalone Tab to Sign In</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
-          {/* User Account Card */}
+          {/* User Account Card with Editable Learner Name */}
           <div
             className={`p-4 rounded-2xl border transition-all ${
               isDark ? 'bg-zinc-900/60 border-zinc-800/80' : 'bg-slate-50 border-slate-200/80'
@@ -185,9 +343,60 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-base font-serif italic font-bold truncate">
-                    {displayName}
-                  </h4>
+                  {isEditingName && !user ? (
+                    <form onSubmit={handleSaveName} className="flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        value={nameInput}
+                        onChange={(e) => setNameInput(e.target.value)}
+                        placeholder="Enter your name"
+                        className={`text-sm font-semibold px-2 py-0.5 rounded-lg border focus:outline-none focus:ring-1 focus:ring-emerald-500 ${
+                          isDark
+                            ? 'bg-zinc-800 border-zinc-700 text-white'
+                            : 'bg-white border-slate-300 text-slate-900'
+                        }`}
+                        autoFocus
+                      />
+                      <button
+                        type="submit"
+                        className="p-1 rounded-lg bg-emerald-500 text-black hover:bg-emerald-400"
+                        title="Save name"
+                      >
+                        <Save className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingName(false)}
+                        className="p-1 rounded-lg text-zinc-400 hover:text-zinc-200"
+                        title="Cancel"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </form>
+                  ) : (
+                    <>
+                      <h4 className="text-base font-serif italic font-bold truncate">
+                        {displayName}
+                      </h4>
+                      {!user && (
+                        <button
+                          onClick={() => {
+                            setNameInput(displayName);
+                            setIsEditingName(true);
+                          }}
+                          className={`p-1 rounded-md transition-colors ${
+                            isDark
+                              ? 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+                              : 'text-slate-400 hover:text-slate-800 hover:bg-slate-200'
+                          }`}
+                          title="Edit learner profile name"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </>
+                  )}
+
                   <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 shrink-0">
                     Lv.{stats.level}
                   </span>
@@ -220,7 +429,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
                       : lastSyncedAt
                         ? `Synced to Firebase (${lastSyncedAt})`
                         : 'Connected to Firebase'
-                    : 'Local session (not backed up)'}
+                    : 'Active local session (all XP, mistakes & quizzes saved)'}
                 </span>
               </div>
               {isSyncing && <Loader2 className="w-3 h-3 animate-spin text-emerald-500" />}
@@ -238,14 +447,14 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
             >
               <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-500">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Secure Cloud Progress</span>
+                <span>Cloud Multi-Device Backup</span>
               </div>
               <p
                 className={`text-xs leading-relaxed ${
                   isDark ? 'text-zinc-300' : 'text-slate-600'
                 }`}
               >
-                Sign in with Google to automatically save your XP, 12-tense completion, daily streak, and mistake notebook across all devices.
+                Sign in with Google to automatically back up your XP, 12-tense completion, daily streak, and mistake notebook across any browser.
               </p>
 
               {/* Google Sign-in Button */}
@@ -287,6 +496,25 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
                   </>
                 )}
               </button>
+
+              {/* Preview Iframe Helper */}
+              {isInIframe && (
+                <div
+                  className={`pt-2 border-t flex items-center justify-between text-[11px] ${
+                    isDark ? 'border-zinc-800/80 text-zinc-400' : 'border-emerald-200/60 text-slate-500'
+                  }`}
+                >
+                  <span>Running in AI Studio Preview?</span>
+                  <button
+                    type="button"
+                    onClick={handleOpenInNewTab}
+                    className="flex items-center gap-1 font-semibold text-emerald-500 hover:text-emerald-400 hover:underline"
+                  >
+                    <span>Open in New Tab</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex items-center justify-between pt-1">

@@ -95,8 +95,8 @@ html:not(.dark), html.light {
   .bg-zinc-900\/50, .bg-zinc-900\/60, .bg-zinc-900\/80 {
     background-color: #F8FAFC !important;
   }
-  .bg-zinc-800 {
-    background-color: #E2E8F0 !important;
+  .bg-zinc-800, .bg-zinc-800\/90, .bg-zinc-800\/80, .bg-zinc-800\/60, .bg-zinc-800\/50 {
+    background-color: #F1F5F9 !important;
   }
 
   /* Borders */

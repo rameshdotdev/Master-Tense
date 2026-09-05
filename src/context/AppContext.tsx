@@ -51,9 +51,12 @@ interface AppContextType {
   signOut: () => Promise<void>;
   isSyncing: boolean;
   lastSyncedAt: string | null;
+  guestName: string;
+  updateGuestName: (name: string) => void;
 }
 
 const GUEST_STORAGE_KEY = 'english_tenses_guest_data_v2';
+const GUEST_NAME_KEY = 'english_tenses_guest_name';
 const THEME_KEY = 'english_tenses_theme';
 
 const INITIAL_STATS: UserStats = {
@@ -148,6 +151,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Flag to avoid syncing local stats to cloud before the initial fetch is loaded
   const isCloudLoadedRef = useRef<boolean>(false);
+
+  // Guest Learner Name personalization
+  const [guestName, setGuestName] = useState<string>(() => {
+    try {
+      return localStorage.getItem(GUEST_NAME_KEY) || 'Ramesh';
+    } catch {
+      return 'Ramesh';
+    }
+  });
+
+  const updateGuestName = (name: string) => {
+    const clean = name.trim() || 'Ramesh';
+    setGuestName(clean);
+    try {
+      localStorage.setItem(GUEST_NAME_KEY, clean);
+    } catch {
+      // ignore
+    }
+  };
 
   // Stats: initialize with guest local data or clean INITIAL_STATS
   const [stats, setStats] = useState<UserStats>(() => {
@@ -559,7 +581,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         signInWithGoogle,
         signOut,
         isSyncing,
-        lastSyncedAt
+        lastSyncedAt,
+        guestName,
+        updateGuestName
       }}
     >
       {children}

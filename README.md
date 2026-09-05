@@ -146,6 +146,26 @@ No user can view, modify, or overwrite another user's progress or profile data.
 
 ---
 
+## 🔐 Environment Variables
+
+The project uses `.env.example` to document all supported configuration variables:
+
+| Variable | Scope | Description |
+| :--- | :--- | :--- |
+| `GEMINI_API_KEY` | Server | Google Gemini API key for server-side AI model requests. |
+| `APP_URL` | Server / Client | The public URL of the deployed application. |
+| `DISABLE_HMR` | Build / Dev | Controls Vite Hot Module Replacement (defaults to `true` in sandbox). |
+| `NODE_ENV` | Build / Dev | Node environment mode (`development` or `production`). |
+| `VITE_FIREBASE_API_KEY` | Client | Firebase Web API key. |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Client | Firebase Authentication domain (e.g. `*.firebaseapp.com`). |
+| `VITE_FIREBASE_PROJECT_ID` | Client | Google Cloud / Firebase Project ID. |
+| `VITE_FIREBASE_FIRESTORE_DATABASE_ID` | Client | Specific Firestore Database ID. |
+| `VITE_FIREBASE_STORAGE_BUCKET` | Client | Firebase Storage bucket URL. |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Client | Cloud messaging sender identifier. |
+| `VITE_FIREBASE_APP_ID` | Client | Firebase web app application ID. |
+
+---
+
 ## 📂 Project Structure
 
 ```

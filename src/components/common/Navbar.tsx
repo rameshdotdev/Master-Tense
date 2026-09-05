@@ -37,7 +37,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDaily, onOpenProfile }) =>
     toggleTheme,
     setIsSearchOpen,
     stats,
-    user
+    user,
+    guestName
   } = useApp();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -263,7 +264,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDaily, onOpenProfile }) =>
                   ? 'bg-zinc-900 border-zinc-800 text-emerald-400 hover:border-emerald-500/70 hover:bg-zinc-800'
                   : 'bg-slate-100 border-slate-200 text-emerald-700 hover:border-emerald-500 hover:bg-slate-200'
               }`}
-              title={user ? `${user.displayName || user.email} (Lv.${stats.level})` : `Sign in / Profile (Lv.${stats.level})`}
+              title={user ? `${user.displayName || user.email} (Lv.${stats.level})` : `${guestName} (Lv.${stats.level})`}
               aria-label="User Profile"
             >
               {user?.photoURL ? (
@@ -275,7 +276,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDaily, onOpenProfile }) =>
                 />
               ) : (
                 <span className="w-5 h-5 rounded-lg bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-[10px] font-bold">
-                  {user ? (user.displayName?.[0] || 'U') : 'G'}
+                  {user ? (user.displayName?.[0] || 'U') : (guestName?.[0] || 'R')}
                 </span>
               )}
               <span className="font-mono text-[11px]">Lv.{stats.level}</span>

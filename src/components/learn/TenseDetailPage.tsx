@@ -25,7 +25,7 @@ interface TenseDetailPageProps {
 }
 
 export const TenseDetailPage: React.FC<TenseDetailPageProps> = ({ tense }) => {
-  const { navigate, stats, markLessonComplete, toggleFavoriteTense } = useApp();
+  const { navigate, stats, markLessonComplete, toggleFavoriteTense, isDark } = useApp();
 
   const isCompleted = stats.completedLessons.includes(tense.id);
   const isFavorited = stats.favoritedTenses.includes(tense.id);
@@ -144,66 +144,96 @@ export const TenseDetailPage: React.FC<TenseDetailPageProps> = ({ tense }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Affirmative */}
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between">
+          <div className={`border rounded-2xl p-5 flex flex-col justify-between transition-colors ${
+            isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-white border-slate-200 shadow-xs'
+          }`}>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+                <span className={`text-xs font-bold uppercase tracking-wider ${
+                  isDark ? 'text-emerald-400' : 'text-emerald-700'
+                }`}>
                   Affirmative (+)
                 </span>
-                <span className="text-[10px] bg-emerald-950/50 border border-emerald-500/30 text-emerald-400 font-bold px-2 py-0.5 rounded">
+                <span className={`text-[10px] border font-bold px-2 py-0.5 rounded ${
+                  isDark ? 'bg-emerald-950/50 border-emerald-500/30 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                }`}>
                   Positive
                 </span>
               </div>
-              <p className="text-xs text-zinc-400 mb-3">
+              <p className={`text-xs mb-3 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                 Used to make statements of fact or reality.
               </p>
             </div>
-            <div className="bg-[#0A0A0A] p-3 rounded-xl border border-zinc-800">
-              <code className="text-xs font-mono font-bold text-emerald-400 break-words">
+            <div className={`p-3 rounded-xl border ${
+              isDark ? 'bg-[#0A0A0A] border-zinc-800' : 'bg-slate-50 border-slate-200'
+            }`}>
+              <code className={`text-xs font-mono font-bold break-words ${
+                isDark ? 'text-emerald-400' : 'text-emerald-700'
+              }`}>
                 {tense.formula.affirmative}
               </code>
             </div>
           </div>
 
           {/* Negative */}
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between">
+          <div className={`border rounded-2xl p-5 flex flex-col justify-between transition-colors ${
+            isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-white border-slate-200 shadow-xs'
+          }`}>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-rose-400">
+                <span className={`text-xs font-bold uppercase tracking-wider ${
+                  isDark ? 'text-rose-400' : 'text-rose-700'
+                }`}>
                   Negative (-)
                 </span>
-                <span className="text-[10px] bg-rose-950/50 border border-rose-500/30 text-rose-400 font-bold px-2 py-0.5 rounded">
+                <span className={`text-[10px] border font-bold px-2 py-0.5 rounded ${
+                  isDark ? 'bg-rose-950/50 border-rose-500/30 text-rose-400' : 'bg-rose-50 border-rose-200 text-rose-700'
+                }`}>
                   Negation
                 </span>
               </div>
-              <p className="text-xs text-zinc-400 mb-3">
+              <p className={`text-xs mb-3 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                 Used to state what does not or did not happen.
               </p>
             </div>
-            <div className="bg-[#0A0A0A] p-3 rounded-xl border border-zinc-800">
-              <code className="text-xs font-mono font-bold text-rose-400 break-words">
+            <div className={`p-3 rounded-xl border ${
+              isDark ? 'bg-[#0A0A0A] border-zinc-800' : 'bg-slate-50 border-slate-200'
+            }`}>
+              <code className={`text-xs font-mono font-bold break-words ${
+                isDark ? 'text-rose-400' : 'text-rose-700'
+              }`}>
                 {tense.formula.negative}
               </code>
             </div>
           </div>
 
           {/* Question */}
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between">
+          <div className={`border rounded-2xl p-5 flex flex-col justify-between transition-colors ${
+            isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-white border-slate-200 shadow-xs'
+          }`}>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-teal-400">
+                <span className={`text-xs font-bold uppercase tracking-wider ${
+                  isDark ? 'text-teal-400' : 'text-teal-700'
+                }`}>
                   Question (?)
                 </span>
-                <span className="text-[10px] bg-teal-950/50 border border-teal-500/30 text-teal-400 font-bold px-2 py-0.5 rounded">
+                <span className={`text-[10px] border font-bold px-2 py-0.5 rounded ${
+                  isDark ? 'bg-teal-950/50 border-teal-500/30 text-teal-400' : 'bg-teal-50 border-teal-200 text-teal-700'
+                }`}>
                   Inquiry
                 </span>
               </div>
-              <p className="text-xs text-zinc-400 mb-3">
+              <p className={`text-xs mb-3 ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                 Inverts auxiliary verb and subject.
               </p>
             </div>
-            <div className="bg-[#0A0A0A] p-3 rounded-xl border border-zinc-800">
-              <code className="text-xs font-mono font-bold text-teal-400 break-words">
+            <div className={`p-3 rounded-xl border ${
+              isDark ? 'bg-[#0A0A0A] border-zinc-800' : 'bg-slate-50 border-slate-200'
+            }`}>
+              <code className={`text-xs font-mono font-bold break-words ${
+                isDark ? 'text-teal-400' : 'text-teal-700'
+              }`}>
                 {tense.formula.question}
               </code>
             </div>
@@ -211,8 +241,12 @@ export const TenseDetailPage: React.FC<TenseDetailPageProps> = ({ tense }) => {
         </div>
 
         {tense.formula.notes && (
-          <div className="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs text-zinc-400">
-            <strong className="font-semibold text-zinc-200">Grammar Note: </strong>
+          <div className={`p-3.5 rounded-xl border text-xs transition-colors ${
+            isDark
+              ? 'bg-zinc-900/80 border-zinc-800 text-zinc-400'
+              : 'bg-slate-50 border-slate-200 text-slate-600'
+          }`}>
+            <strong className={`font-semibold ${isDark ? 'text-zinc-200' : 'text-slate-800'}`}>Grammar Note: </strong>
             {tense.formula.notes}
           </div>
         )}
